@@ -24,6 +24,7 @@ using CUE4Parse.UE4.AssetRegistry;
 using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Animation;
+using CUE4Parse.UE4.Assets.Exports.CriWare;
 using CUE4Parse.UE4.Assets.Exports.Fmod;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
@@ -33,6 +34,8 @@ using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Assets.Exports.Verse;
 using CUE4Parse.UE4.Assets.Exports.Wwise;
 using CUE4Parse.UE4.BinaryConfig;
+using CUE4Parse.UE4.CriWare;
+using CUE4Parse.UE4.CriWare.Readers;
 using CUE4Parse.UE4.FMod;
 using CUE4Parse.UE4.IO;
 using CUE4Parse.UE4.Localization;
@@ -135,6 +138,8 @@ public class CUE4ParseViewModel : ViewModel
     public WwiseProvider WwiseProvider => _wwiseProviderLazy.Value;
     private Lazy<FModProvider> _fmodProviderLazy;
     public FModProvider FmodProvider => _fmodProviderLazy?.Value;
+    private Lazy<CriWareProvider> _criWareProviderLazy;
+    public CriWareProvider CriWareProvider => _criWareProviderLazy?.Value;
     public ConcurrentBag<string> UnknownExtensions = [];
 
     public CUE4ParseViewModel()
@@ -289,6 +294,7 @@ public class CUE4ParseViewModel : ViewModel
             Provider.Initialize();
             _wwiseProviderLazy = new Lazy<WwiseProvider>(() => new WwiseProvider(Provider, UserSettings.Default.WwiseMaxBnkPrefetch));
             _fmodProviderLazy = new Lazy<FModProvider>(() => new FModProvider(Provider, UserSettings.Default.GameDirectory));
+            _criWareProviderLazy = new Lazy<CriWareProvider>(() => new CriWareProvider(Provider, UserSettings.Default.GameDirectory));
             Log.Information($"{Provider.Versions.Game} ({Provider.Versions.Platform}) | Archives: x{Provider.UnloadedVfs.Count} | AES: x{Provider.RequiredKeys.Count} | Loose Files: x{Provider.Files.Count}");
         });
     }
@@ -770,6 +776,35 @@ public class CUE4ParseViewModel : ViewModel
 
                 break;
             }
+            case "awb":
+                {
+                    var archive = entry.CreateReader();
+                    var awbReader = new AwbReader(archive);
+
+                    var extractedSounds = CriWareProvider.ExtractCriWareSounds(awbReader, archive.Name);
+                    foreach (var sound in extractedSounds)
+                    {
+                        SaveAndPlaySound(Path.Combine("/Criware/", sound.Name), sound.Extension, sound.Data, saveAudio);
+                    }
+
+                    break;
+                }
+
+            case "acb":
+                {
+                    var archive = entry.CreateReader();
+                    var acbReader = new AcbReader(archive);
+
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(acbReader, Formatting.Indented), saveProperties, updateUi);
+
+                    var extractedSounds = CriWareProvider.ExtractCriWareSounds(acbReader, archive.Name);
+                    foreach (var sound in extractedSounds)
+                    {
+                        SaveAndPlaySound(Path.Combine("/Criware/", sound.Name), sound.Extension, sound.Data, saveAudio);
+                    }
+
+                    break;
+                }
             case "xvag":
             case "flac":
             case "at9":
@@ -995,6 +1030,26 @@ public class CUE4ParseViewModel : ViewModel
                 }
                 return false;
             }
+            case USoundAtomCueSheet when isNone && pointer.Object.Value is USoundAtomCueSheet atomCueSheet:
+                {
+                    var extractedSounds = CriWareProvider.ExtractCriWareSounds(atomCueSheet);
+                    var directory = Path.GetDirectoryName(atomCueSheet.Owner?.Name) ?? "/Criware/";
+                    foreach (var sound in extractedSounds)
+                    {
+                        SaveAndPlaySound(Path.Combine(directory, sound.Name), sound.Extension, sound.Data, saveAudio);
+                    }
+                    return false;
+                }
+            case UAtomCueSheet when isNone && pointer.Object.Value is UAtomCueSheet atomCueSheet:
+                {
+                    var extractedSounds = CriWareProvider.ExtractCriWareSounds(atomCueSheet);
+                    var directory = Path.GetDirectoryName(atomCueSheet.Owner?.Name) ?? "/Criware/";
+                    foreach (var sound in extractedSounds)
+                    {
+                        SaveAndPlaySound(Path.Combine(directory, sound.Name), sound.Extension, sound.Data, saveAudio);
+                    }
+                    return false;
+                }
             case UAkMediaAssetData when isNone || saveAudio:
             case USoundWave when isNone || saveAudio:
             {

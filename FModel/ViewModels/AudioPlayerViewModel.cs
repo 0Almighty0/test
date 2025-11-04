@@ -569,6 +569,7 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
             case "wem":
             case "at9":
             case "raw":
+            case "hca":
             {
                 if (TryConvert(out var wavFilePath))
                 {
