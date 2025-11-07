@@ -781,6 +781,8 @@ public class CUE4ParseViewModel : ViewModel
                 var archive = entry.CreateReader();
                 var awbReader = new AwbReader(archive);
 
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(awbReader, Formatting.Indented), saveProperties, updateUi);
+
                 var extractedSounds = CriWareProvider.ExtractCriWareSounds(awbReader, archive.Name);
                 foreach (var sound in extractedSounds)
                 {
@@ -1029,26 +1031,24 @@ public class CUE4ParseViewModel : ViewModel
                 }
                 return false;
             }
-            case USoundAtomCueSheet when isNone && pointer.Object.Value is USoundAtomCueSheet atomCueSheet:
+            case USoundAtomCueSheet or UAtomCueSheet or USoundAtomCue or UAtomWaveBank when (isNone || saveAudio) && pointer.Object.Value is UObject atomObject:
+            {
+                var extractedSounds = atomObject switch
                 {
-                    var extractedSounds = CriWareProvider.ExtractCriWareSounds(atomCueSheet);
-                    var directory = Path.GetDirectoryName(atomCueSheet.Owner?.Name) ?? "/Criware/";
-                    foreach (var sound in extractedSounds)
-                    {
-                        SaveAndPlaySound(Path.Combine(directory, sound.Name), sound.Extension, sound.Data, saveAudio);
-                    }
-                    return false;
-                }
-            case UAtomCueSheet when isNone && pointer.Object.Value is UAtomCueSheet atomCueSheet:
+                    USoundAtomCueSheet cueSheet => CriWareProvider.ExtractCriWareSounds(cueSheet),
+                    UAtomCueSheet cueSheet => CriWareProvider.ExtractCriWareSounds(cueSheet),
+                    USoundAtomCue cue => CriWareProvider.ExtractCriWareSounds(cue),
+                    UAtomWaveBank awb => CriWareProvider.ExtractCriWareSounds(awb),
+                    _ => []
+                };
+
+                var directory = Path.GetDirectoryName(atomObject.Owner?.Name) ?? "/Criware/";
+                foreach (var sound in extractedSounds)
                 {
-                    var extractedSounds = CriWareProvider.ExtractCriWareSounds(atomCueSheet);
-                    var directory = Path.GetDirectoryName(atomCueSheet.Owner?.Name) ?? "/Criware/";
-                    foreach (var sound in extractedSounds)
-                    {
-                        SaveAndPlaySound(Path.Combine(directory, sound.Name), sound.Extension, sound.Data, saveAudio);
-                    }
-                    return false;
+                    SaveAndPlaySound(Path.Combine(directory, sound.Name).Replace("\\", "/"), sound.Extension, sound.Data, saveAudio);
                 }
+                return false;
+            }
             case UAkMediaAssetData when isNone || saveAudio:
             case USoundWave when isNone || saveAudio:
             {
