@@ -2,14 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using CUE4Parse.UE4.Assets.Exports.Material;
+using CUE4Parse.UE4.Assets.Exports.Nanite;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Serialization;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.Textures;
 using CUE4Parse_Conversion.UEFormat.Enums;
-using CUE4Parse.UE4.Assets.Exports.Material;
-using CUE4Parse.UE4.Assets.Exports.Nanite;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
@@ -165,6 +165,13 @@ public class SettingsViewModel : ViewModel
         set => SetProperty(ref _selectedTextureExportFormat, value);
     }
 
+    private ulong _criwareDecryptionKey;
+    public ulong CriwareDecryptionKey
+    {
+        get => _criwareDecryptionKey;
+        set => SetProperty(ref _criwareDecryptionKey, value);
+    }
+
     public bool SocketSettingsEnabled => SelectedMeshExportFormat == EMeshFormat.ActorX;
     public bool CompressionSettingsEnabled => SelectedMeshExportFormat == EMeshFormat.UEFormat;
 
@@ -227,6 +234,7 @@ public class SettingsViewModel : ViewModel
         _customVersionsSnapshot = UserSettings.Default.CurrentDir.Versioning.CustomVersions;
         _optionsSnapshot = UserSettings.Default.CurrentDir.Versioning.Options;
         _mapStructTypesSnapshot = UserSettings.Default.CurrentDir.Versioning.MapStructTypes;
+        _criwareDecryptionKey = UserSettings.Default.CurrentDir.CriwareDecryptionKey;
 
         AesEndpoint = UserSettings.Default.CurrentDir.Endpoints[0];
         MappingEndpoint = UserSettings.Default.CurrentDir.Endpoints[1];
@@ -262,6 +270,7 @@ public class SettingsViewModel : ViewModel
         SelectedNaniteMeshExportFormat = _naniteMeshExportFormatSnapshot;
         SelectedMaterialExportFormat = _materialExportFormatSnapshot;
         SelectedTextureExportFormat = _textureExportFormatSnapshot;
+        CriwareDecryptionKey = _criwareDecryptionKey;
         SelectedAesReload = UserSettings.Default.AesReload;
         SelectedDiscordRpc = UserSettings.Default.DiscordRpc;
 
@@ -308,6 +317,7 @@ public class SettingsViewModel : ViewModel
         UserSettings.Default.CurrentDir.Versioning.CustomVersions = SelectedCustomVersions;
         UserSettings.Default.CurrentDir.Versioning.Options = SelectedOptions;
         UserSettings.Default.CurrentDir.Versioning.MapStructTypes = SelectedMapStructTypes;
+        UserSettings.Default.CurrentDir.CriwareDecryptionKey = CriwareDecryptionKey;
 
         UserSettings.Default.AssetLanguage = SelectedAssetLanguage;
         UserSettings.Default.CompressedAudioMode = SelectedCompressedAudio;

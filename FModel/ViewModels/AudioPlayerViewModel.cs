@@ -1,7 +1,3 @@
-using CSCore;
-using CSCore.DSP;
-using CSCore.SoundOut;
-using CSCore.Streams;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,7 +8,12 @@ using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Data;
+using CSCore;
 using CSCore.CoreAudioAPI;
+using CSCore.DSP;
+using CSCore.SoundOut;
+using CSCore.Streams;
+using CUE4Parse.UE4.CriWare.Decoders.HCA;
 using CUE4Parse.Utils;
 using FModel.Extensions;
 using FModel.Framework;
@@ -569,7 +570,6 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
             case "wem":
             case "at9":
             case "raw":
-            case "hca":
             {
                 if (TryConvert(out var wavFilePath))
                 {
@@ -579,6 +579,37 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
                 }
 
                 return false;
+            }
+            case "hca":
+            {
+                try
+                {
+                    byte[] wavData = HcaWaveStream.ConvertHcaToWav(SelectedAudioFile.Data, UserSettings.Default.CurrentDir.CriwareDecryptionKey);
+
+                    string outputDir = Path.Combine(UserSettings.Default.OutputDirectory, ".data");
+                    Directory.CreateDirectory(outputDir);
+
+                    string wavFilePath = Path.Combine(outputDir,
+                        Path.ChangeExtension(SelectedAudioFile.FileName, ".wav"));
+
+                    File.WriteAllBytes(wavFilePath, wavData);
+
+                    var newAudio = new AudioFile(SelectedAudioFile.Id, new FileInfo(wavFilePath));
+                    Replace(newAudio);
+
+                    return true;
+                }
+                catch (CriwareDecryptionException ex)
+                {
+                    FLogger.Append(ELog.Error, () => FLogger.Text($"Failed to convert HCA: '{ex.Message}'", Constants.WHITE, true));
+                    Log.Error($"Failed to convert HCA: {ex.Message}");
+                    return false;
+                }
+                catch (Exception ex)
+                {
+                    Log.Error($"Failed to convert HCA: {ex.Message}");
+                    return false;
+                }
             }
             case "rada":
             case "binka":

@@ -777,34 +777,33 @@ public class CUE4ParseViewModel : ViewModel
                 break;
             }
             case "awb":
+            {
+                var archive = entry.CreateReader();
+                var awbReader = new AwbReader(archive);
+
+                var extractedSounds = CriWareProvider.ExtractCriWareSounds(awbReader, archive.Name);
+                foreach (var sound in extractedSounds)
                 {
-                    var archive = entry.CreateReader();
-                    var awbReader = new AwbReader(archive);
-
-                    var extractedSounds = CriWareProvider.ExtractCriWareSounds(awbReader, archive.Name);
-                    foreach (var sound in extractedSounds)
-                    {
-                        SaveAndPlaySound(Path.Combine("/Criware/", sound.Name), sound.Extension, sound.Data, saveAudio);
-                    }
-
-                    break;
+                    SaveAndPlaySound(Path.Combine("/Criware/", sound.Name), sound.Extension, sound.Data, saveAudio);
                 }
 
+                break;
+            }
             case "acb":
+            {
+                var archive = entry.CreateReader();
+                var acbReader = new AcbReader(archive);
+
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(acbReader, Formatting.Indented), saveProperties, updateUi);
+
+                var extractedSounds = CriWareProvider.ExtractCriWareSounds(acbReader, archive.Name);
+                foreach (var sound in extractedSounds)
                 {
-                    var archive = entry.CreateReader();
-                    var acbReader = new AcbReader(archive);
-
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(acbReader, Formatting.Indented), saveProperties, updateUi);
-
-                    var extractedSounds = CriWareProvider.ExtractCriWareSounds(acbReader, archive.Name);
-                    foreach (var sound in extractedSounds)
-                    {
-                        SaveAndPlaySound(Path.Combine("/Criware/", sound.Name), sound.Extension, sound.Data, saveAudio);
-                    }
-
-                    break;
+                    SaveAndPlaySound(Path.Combine("/Criware/", sound.Name), sound.Extension, sound.Data, saveAudio);
                 }
+
+                break;
+            }
             case "xvag":
             case "flac":
             case "at9":
