@@ -13,6 +13,8 @@ using CSCore.CoreAudioAPI;
 using CSCore.DSP;
 using CSCore.SoundOut;
 using CSCore.Streams;
+using CUE4Parse.UE4.CriWare.Decoders;
+using CUE4Parse.UE4.CriWare.Decoders.ADX;
 using CUE4Parse.UE4.CriWare.Decoders.HCA;
 using CUE4Parse.Utils;
 using FModel.Extensions;
@@ -580,37 +582,9 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
 
                 return false;
             }
+            case "adx":
             case "hca":
-            {
-                try
-                {
-                    byte[] wavData = HcaWaveStream.ConvertHcaToWav(SelectedAudioFile.Data, UserSettings.Default.CurrentDir.CriwareDecryptionKey);
-
-                    string wavFilePath = Path.Combine(UserSettings.Default.AudioDirectory, SelectedAudioFile.FilePath.TrimStart('/'));
-                    wavFilePath = Path.ChangeExtension(wavFilePath, ".wav");
-
-                    Directory.CreateDirectory(Path.GetDirectoryName(wavFilePath)!);
-
-                    File.WriteAllBytes(wavFilePath, wavData);
-
-                    var newAudio = new AudioFile(SelectedAudioFile.Id, new FileInfo(wavFilePath));
-                    Replace(newAudio);
-
-                    return true;
-                }
-                catch (CriwareDecryptionException ex)
-                {
-                    FLogger.Append(ELog.Error, () => FLogger.Text($"Encrypted HCA: {ex.Message}", Constants.WHITE, true));
-                    Log.Error($"Encrypted HCA: {ex.Message}");
-                    return false;
-                }
-                catch (Exception ex)
-                {
-                    FLogger.Append(ELog.Error, () => FLogger.Text($"Failed to convert HCA: {ex.Message}", Constants.WHITE, true));
-                    Log.Error($"Failed to convert HCA: {ex.Message}");
-                    return false;
-                }
-            }
+                return TryConvertCriware();
             case "rada":
             case "binka":
             {
@@ -626,6 +600,48 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
         }
 
         return true;
+    }
+
+    private bool TryConvertCriware()
+    {
+        try
+        {
+            byte[] wavData = SelectedAudioFile.Extension switch
+            {
+                "hca" => HcaWaveStream.ConvertHcaToWav(
+                    SelectedAudioFile.Data,
+                    UserSettings.Default.CurrentDir.CriwareDecryptionKey),
+                "adx" => AdxDecoder.ConvertAdxToWav(
+                    SelectedAudioFile.Data,
+                    UserSettings.Default.CurrentDir.CriwareDecryptionKey),
+                _ => throw new NotSupportedException()
+            };
+
+            string wavFilePath = Path.Combine(
+                UserSettings.Default.AudioDirectory,
+                SelectedAudioFile.FilePath.TrimStart('/'));
+            wavFilePath = Path.ChangeExtension(wavFilePath, ".wav");
+
+            Directory.CreateDirectory(Path.GetDirectoryName(wavFilePath)!);
+            File.WriteAllBytes(wavFilePath, wavData);
+
+            var newAudio = new AudioFile(SelectedAudioFile.Id, new FileInfo(wavFilePath));
+            Replace(newAudio);
+
+            return true;
+        }
+        catch (CriwareDecryptionException ex)
+        {
+            FLogger.Append(ELog.Error, () => FLogger.Text($"Encrypted {SelectedAudioFile.Extension.ToUpper()}: {ex.Message}", Constants.WHITE, true));
+            Log.Error($"Encrypted {SelectedAudioFile.Extension.ToUpper()}: {ex.Message}");
+            return false;
+        }
+        catch (Exception ex)
+        {
+            FLogger.Append(ELog.Error, () => FLogger.Text($"Failed to convert {SelectedAudioFile.Extension.ToUpper()}: {ex.Message}", Constants.WHITE, true));
+            Log.Error($"Failed to convert {SelectedAudioFile.Extension.ToUpper()}: {ex.Message}");
+            return false;
+        }
     }
 
     private bool TryConvert(out string wavFilePath) => TryConvert(SelectedAudioFile.FilePath, SelectedAudioFile.Data, out wavFilePath);

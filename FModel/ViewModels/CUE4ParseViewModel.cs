@@ -783,10 +783,11 @@ public class CUE4ParseViewModel : ViewModel
 
                 TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(awbReader, Formatting.Indented), saveProperties, updateUi);
 
+                var directory = Path.GetDirectoryName(archive.Name) ?? "/Criware/";
                 var extractedSounds = CriWareProvider.ExtractCriWareSounds(awbReader, archive.Name);
                 foreach (var sound in extractedSounds)
                 {
-                    SaveAndPlaySound(Path.Combine("/Criware/", sound.Name), sound.Extension, sound.Data, saveAudio);
+                    SaveAndPlaySound(Path.Combine(directory, sound.Name), sound.Extension, sound.Data, saveAudio);
                 }
 
                 break;
@@ -798,10 +799,11 @@ public class CUE4ParseViewModel : ViewModel
 
                 TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(acbReader, Formatting.Indented), saveProperties, updateUi);
 
+                var directory = Path.GetDirectoryName(archive.Name) ?? "/Criware/";
                 var extractedSounds = CriWareProvider.ExtractCriWareSounds(acbReader, archive.Name);
                 foreach (var sound in extractedSounds)
                 {
-                    SaveAndPlaySound(Path.Combine("/Criware/", sound.Name), sound.Extension, sound.Data, saveAudio);
+                    SaveAndPlaySound(Path.Combine(directory, sound.Name), sound.Extension, sound.Data, saveAudio);
                 }
 
                 break;
@@ -1043,6 +1045,7 @@ public class CUE4ParseViewModel : ViewModel
                 };
 
                 var directory = Path.GetDirectoryName(atomObject.Owner?.Name) ?? "/Criware/";
+                directory = Path.GetDirectoryName(atomObject.Owner.Provider.FixPath(directory));
                 foreach (var sound in extractedSounds)
                 {
                     SaveAndPlaySound(Path.Combine(directory, sound.Name).Replace("\\", "/"), sound.Extension, sound.Data, saveAudio);
