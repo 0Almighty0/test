@@ -1,7 +1,3 @@
-using CSCore;
-using CSCore.DSP;
-using CSCore.SoundOut;
-using CSCore.Streams;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,7 +8,14 @@ using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Data;
+using CSCore;
 using CSCore.CoreAudioAPI;
+using CSCore.DSP;
+using CSCore.SoundOut;
+using CSCore.Streams;
+using CUE4Parse.UE4.CriWare.Decoders;
+using CUE4Parse.UE4.CriWare.Decoders.ADX;
+using CUE4Parse.UE4.CriWare.Decoders.HCA;
 using CUE4Parse.Utils;
 using FModel.Extensions;
 using FModel.Framework;
@@ -579,6 +582,9 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
 
                 return false;
             }
+            case "adx":
+            case "hca":
+                return TryConvertCriware();
             case "rada":
             case "binka":
             {
@@ -594,6 +600,48 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
         }
 
         return true;
+    }
+
+    private bool TryConvertCriware()
+    {
+        try
+        {
+            byte[] wavData = SelectedAudioFile.Extension switch
+            {
+                "hca" => HcaWaveStream.ConvertHcaToWav(
+                    SelectedAudioFile.Data,
+                    UserSettings.Default.CurrentDir.CriwareDecryptionKey),
+                "adx" => AdxDecoder.ConvertAdxToWav(
+                    SelectedAudioFile.Data,
+                    UserSettings.Default.CurrentDir.CriwareDecryptionKey),
+                _ => throw new NotSupportedException()
+            };
+
+            string wavFilePath = Path.Combine(
+                UserSettings.Default.AudioDirectory,
+                SelectedAudioFile.FilePath.TrimStart('/'));
+            wavFilePath = Path.ChangeExtension(wavFilePath, ".wav");
+
+            Directory.CreateDirectory(Path.GetDirectoryName(wavFilePath)!);
+            File.WriteAllBytes(wavFilePath, wavData);
+
+            var newAudio = new AudioFile(SelectedAudioFile.Id, new FileInfo(wavFilePath));
+            Replace(newAudio);
+
+            return true;
+        }
+        catch (CriwareDecryptionException ex)
+        {
+            FLogger.Append(ELog.Error, () => FLogger.Text($"Encrypted {SelectedAudioFile.Extension.ToUpper()}: {ex.Message}", Constants.WHITE, true));
+            Log.Error($"Encrypted {SelectedAudioFile.Extension.ToUpper()}: {ex.Message}");
+            return false;
+        }
+        catch (Exception ex)
+        {
+            FLogger.Append(ELog.Error, () => FLogger.Text($"Failed to convert {SelectedAudioFile.Extension.ToUpper()}: {ex.Message}", Constants.WHITE, true));
+            Log.Error($"Failed to convert {SelectedAudioFile.Extension.ToUpper()}: {ex.Message}");
+            return false;
+        }
     }
 
     private bool TryConvert(out string wavFilePath) => TryConvert(SelectedAudioFile.FilePath, SelectedAudioFile.Data, out wavFilePath);
