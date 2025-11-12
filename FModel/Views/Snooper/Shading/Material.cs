@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -121,10 +121,15 @@ public class Material : IDisposable
                     RoughnessMax = roughness + d;
                 }
 
-                if (Parameters.TryGetScalar(out var emissiveMultScalar, "emissive mult", "Emissive_Mult", "EmissiveIntensity", "EmissionIntensity"))
-                    EmissiveMult = emissiveMultScalar;
-                else if (Parameters.TryGetLinearColor(out var emissiveMultColor, "Emissive Multiplier", "EmissiveMultiplier"))
-                    EmissiveMult = emissiveMultColor.R;
+                if (!options.SkipEmmisive())
+                {
+                    if (Parameters.TryGetScalar(out var emissiveMultScalar, "emissive mult", "Emissive_Mult", "EmissiveIntensity", "EmissionIntensity"))
+                        EmissiveMult = emissiveMultScalar;
+                    else if (Parameters.TryGetLinearColor(out var emissiveMultColor, "Emissive Multiplier", "EmissiveMultiplier"))
+                        EmissiveMult = emissiveMultColor.R;
+                }
+                else
+                    EmissiveMult = 0f;
 
                 if (Parameters.TryGetLinearColor(out var EmissiveUVs,
                         "EmissiveUVs_RG_UpperLeftCorner_BA_LowerRightCorner",

@@ -648,6 +648,7 @@ public class CUE4ParseViewModel : ViewModel
             case "dnearchive": // Banishers: Ghosts of New Eden
             case "gitignore":
             case "LICENSE":
+            case "playstats": // Dispatch
             case "template":
             case "stUMeta": // LIS: Double Exposure
             case "vmodule":
