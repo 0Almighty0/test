@@ -17,6 +17,7 @@ using CUE4Parse.Encryption.Aes;
 using CUE4Parse.FileProvider;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.FileProvider.Vfs;
+using CUE4Parse.GameTypes.Aion2.Objects;
 using CUE4Parse.GameTypes.AshEchoes.FileProvider;
 using CUE4Parse.GameTypes.KRD.Assets.Exports;
 using CUE4Parse.MappingsProvider;
@@ -637,6 +638,11 @@ public class CUE4ParseViewModel : ViewModel
 
                 break;
             }
+            case "dat" when Provider.ProjectName.Equals("Aion2", StringComparison.OrdinalIgnoreCase):
+                {
+                    ProcessAion2DatFile(entry, updateUi, saveProperties);
+                    break;
+                }
             case "upluginmanifest":
             case "code-workspace":
             case "projectstore":
@@ -904,6 +910,37 @@ public class CUE4ParseViewModel : ViewModel
                         FLogger.Text($"There are some packages with an unknown type {entry.Extension}. Check Log file for a full list.", Constants.WHITE, true));
                 }
                 break;
+            }
+        }
+
+        void ProcessAion2DatFile(GameFile entry, bool updateUi, bool saveProperties)
+        {
+            TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("json");
+            if (entry.NameWithoutExtension.EndsWith("_MapEvent"))
+            {
+                var data = Provider.SaveAsset(entry);
+                FAion2DatFileArchive.DecryptData(data);
+                using var stream = new MemoryStream(data) { Position = 0 };
+                using var reader = new StreamReader(stream);
+
+                TabControl.SelectedTab.SetDocumentText(reader.ReadToEnd(), saveProperties, updateUi);
+            }
+            else if (entry.NameWithoutExtension.Equals("L10NString"))
+            {
+                var l10nData = new FAion2L10NFile(entry);
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(l10nData, Formatting.Indented), saveProperties, updateUi);
+            }
+            else
+            {
+                FAion2DataFile datfile = entry.NameWithoutExtension switch
+                {
+                    "MapDataHierarchy" => new FAion2MapHierarchyFile(entry),
+                    "MapData" => new FAion2MapDataFile(entry, Provider),
+                    _ when entry.Directory.EndsWith("Data/WorldMap", StringComparison.OrdinalIgnoreCase) => new FAion2MapDataFile(entry, Provider),
+                    _ => new FAion2DataTableFile(entry, Provider)
+                };
+
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(datfile, Formatting.Indented), saveProperties, updateUi);
             }
         }
     }
