@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Data;
+using CUE4Parse.Compression;
 using CUE4Parse.UE4.IO;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.VirtualFileSystem;
@@ -69,6 +70,13 @@ public class FileItem : ViewModel
         set => SetProperty(ref _guid, value);
     }
 
+    private CompressionMethod[] _compressionMethods;
+    public CompressionMethod[] CompressionMethods
+    {
+        get => _compressionMethods;
+        set => SetProperty(ref  _compressionMethods, value);
+    }
+
     public FileItem(string name, long length)
     {
         Name = name;
@@ -84,6 +92,7 @@ public class FileItem : ViewModel
         IsEnabled = false;
         Key = string.Empty;
         FileCount = reader is IoStoreReader storeReader ? (int) storeReader.TocResource.Header.TocEntryCount - 1 : 0;
+        CompressionMethods = reader.CompressionMethods;
     }
 
     public override string ToString()

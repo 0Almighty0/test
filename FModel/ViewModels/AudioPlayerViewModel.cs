@@ -566,6 +566,7 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
 
         switch (SelectedAudioFile.Extension)
         {
+            case "binka":
             case "adpcm":
             case "xvag":
             case "opus":
@@ -586,7 +587,6 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
             case "hca":
                 return TryConvertCriware();
             case "rada":
-            case "binka":
             {
                 if (TryDecode(SelectedAudioFile.Extension, out var rawFilePath))
                 {
