@@ -26,6 +26,10 @@
     <NoWarn>NU1701</NoWarn>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="Resources\android.png" />
     <None Remove="Resources\apple.png" />
