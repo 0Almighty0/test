@@ -249,7 +249,11 @@ public class ApplicationViewModel : ViewModel
 
         if (!File.Exists(oodlePath))
         {
-            await OodleHelper.DownloadOodleDllAsync(oodlePath);
+            if (!await OodleHelper.DownloadOodleDllAsync(oodlePath))
+            {
+                FLogger.Append(ELog.Error, () => FLogger.Text("Failed to download Oodle", Constants.WHITE, true));
+                return;
+            }
         }
 
         OodleHelper.Initialize(oodlePath);
@@ -262,7 +266,11 @@ public class ApplicationViewModel : ViewModel
 
         if (!zlibFileInfo.Exists || zlibFileInfo.LastWriteTimeUtc < DateTime.UtcNow.AddMonths(-4))
         {
-            await ZlibHelper.DownloadDllAsync(zlibPath);
+            if (!await ZlibHelper.DownloadDllAsync(zlibPath))
+            {
+                FLogger.Append(ELog.Error, () => FLogger.Text("Failed to download Zlib-ng", Constants.WHITE, true));
+                if (!zlibFileInfo.Exists) return;
+            }
         }
 
         ZlibHelper.Initialize(zlibPath);
