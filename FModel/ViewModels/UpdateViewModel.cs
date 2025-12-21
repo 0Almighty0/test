@@ -76,7 +76,14 @@ public partial class UpdateViewModel : ViewModel
                 foreach (Match match in matches)
                 {
                     if (match.Groups.Count < 3) continue;
-                    coAuthorMap[commit].Add(match.Groups[1].Value);
+
+                    var username = match.Groups[1].Value;
+                    if (username.Equals("Asval", StringComparison.OrdinalIgnoreCase))
+                    {
+                        username = "4sval"; // found out the hard way co-authored usernames can't be trusted
+                    }
+
+                    coAuthorMap[commit].Add(username);
                 }
             }
 

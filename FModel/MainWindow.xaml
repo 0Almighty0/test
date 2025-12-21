@@ -351,6 +351,7 @@
                             <TreeView Grid.Row="2"
                                       x:Name="AssetsFolderName"
                                       Style="{StaticResource AssetsFolderTreeView}"
+                                      SelectedItemChanged="OnAssetsTreeSelectedItemChanged"
                                       PreviewKeyDown="OnFoldersPreviewKeyDown"
                                       PreviewMouseDoubleClick="OnAssetsTreeMouseDoubleClick">
                             </TreeView>

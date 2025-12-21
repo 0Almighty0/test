@@ -103,7 +103,7 @@ public partial class MainWindow
         await Task.WhenAll(
             ApplicationViewModel.InitOodle(),
             ApplicationViewModel.InitZlib()
-        ).ConfigureAwait(false);
+        );
 
         await _applicationView.CUE4Parse.Initialize();
         await _applicationView.AesManager.InitAes();
@@ -273,6 +273,14 @@ public partial class MainWindow
                 file.OnIsVisible();
             }
         }
+    }
+
+    private void OnAssetsTreeSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+    {
+        if (sender is not TreeView { SelectedItem: TreeItem }) return;
+
+        _applicationView.IsAssetsExplorerVisible = true;
+        _applicationView.SelectedLeftTabIndex = 1;
     }
 
     private async void OnAssetsListMouseDoubleClick(object sender, MouseButtonEventArgs e)
