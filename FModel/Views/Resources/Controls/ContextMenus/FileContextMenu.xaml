@@ -86,7 +86,7 @@
                     <Binding.Converter>
                         <converters:AnyItemMeetsConditionConverter>
                             <converters:AnyItemMeetsConditionConverter.Conditions>
-                                <converters:ItemCategoryCondition Category="Blueprint" />
+                                <converters:ItemCategoryCondition Category="Blueprints" />
                             </converters:AnyItemMeetsConditionConverter.Conditions>
                         </converters:AnyItemMeetsConditionConverter>
                     </Binding.Converter>
