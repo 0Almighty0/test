@@ -235,12 +235,14 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 UObjectRedirector => (EAssetCategory.ObjectRedirector, EBulkType.None),
                 UPhysicalMaterial => (EAssetCategory.PhysicalMaterial, EBulkType.None),
 
-                USoundAtomCue or UAkAudioEvent or USoundCue or UFMODEvent => (EAssetCategory.AudioEvent, EBulkType.Audio),
+                USoundAtomCue or UAkAudioEvent or USoundCue or UFMODEvent
+                    or UAkAssetData or UAkAssetPlatformData => (EAssetCategory.AudioEvent, EBulkType.Audio),
 
                 UFMODBank or UAkAudioBank or UAtomWaveBank or UAkInitBank => (EAssetCategory.SoundBank, EBulkType.Audio),
 
                 UWwiseAssetLibrary or USoundBase or UAkMediaAssetData or UAtomCueSheet
-                    or USoundAtomCueSheet or UAkAudioType or UExternalSource or UExternalSourceBank => (EAssetCategory.Audio, EBulkType.Audio),
+                    or USoundAtomCueSheet or UAkAudioType or UExternalSource or UExternalSourceBank
+                    or UAkMediaAsset => (EAssetCategory.Audio, EBulkType.Audio),
 
                 UFileMediaSource => (EAssetCategory.Video, EBulkType.None),
                 UFont or UFontFace or USMGLocaleFontUMG => (EAssetCategory.Font, EBulkType.None),

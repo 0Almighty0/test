@@ -1108,7 +1108,7 @@ public class CUE4ParseViewModel : ViewModel
                 TabControl.SelectedTab.AddImage(sourceFile.SubstringAfterLast('/'), false, bitmap, false, updateUi);
                 return false;
             }
-            // The Dark Pictures Anthology
+            // Supermassive Games (for example - The Dark Pictures Anthology: House of Ashes etc.)
             case UExternalSource when (isNone || saveAudio) && pointer.Object.Value is UExternalSource externalSource:
             {
                 var audioName = Path.GetFileNameWithoutExtension(externalSource.ExternalSourcePath);
@@ -1166,6 +1166,10 @@ public class CUE4ParseViewModel : ViewModel
             case UAkMediaAssetData when isNone || saveAudio:
             case USoundWave when isNone || saveAudio:
             {
+                // If UAkMediaAsset exists in the same package it should be used to handle the audio instead (because it contains actual audio name)
+                if (pointer.Object.Value is UAkMediaAssetData dataObj && dataObj.Outer is UAkMediaAsset)
+                    return false;
+
                 var shouldDecompress = UserSettings.Default.CompressedAudioMode == ECompressedAudio.PlayDecompressed;
                 pointer.Object.Value.Decode(shouldDecompress, out var audioFormat, out var data);
                 var hasAf = !string.IsNullOrEmpty(audioFormat);
@@ -1176,6 +1180,36 @@ public class CUE4ParseViewModel : ViewModel
                 }
 
                 SaveAndPlaySound(TabControl.SelectedTab.Entry.PathWithoutExtension.Replace('\\', '/'), audioFormat, data, saveAudio);
+                return false;
+            }
+            case UAkMediaAsset when (isNone || saveAudio) && pointer.Object.Value is UAkMediaAsset akMediaAsset:
+            {
+                var audioName = akMediaAsset.MediaName;
+                if (akMediaAsset.CurrentMediaAssetData?.TryLoad<UAkMediaAssetData>(out var akMediaAssetData) is true)
+                {
+                    var shouldDecompress = UserSettings.Default.CompressedAudioMode is ECompressedAudio.PlayDecompressed;
+                    akMediaAssetData.Decode(shouldDecompress, out var audioFormat, out var data);
+
+                    SaveAndPlaySound(audioName, audioFormat, data, saveAudio);
+                }
+                return false;
+            }
+            case UAkAudioEventData when (isNone || saveAudio) && pointer.Object.Value is UAkAudioEventData akAudioEventData:
+            {
+                var shouldDecompress = UserSettings.Default.CompressedAudioMode is ECompressedAudio.PlayDecompressed;
+                foreach (var mediaIndex in akAudioEventData.MediaList)
+                {
+                    if (mediaIndex.TryLoad<UAkMediaAsset>(out var akMediaAsset))
+                    {
+                        if (akMediaAsset.CurrentMediaAssetData?.TryLoad<UAkMediaAssetData>(out var akMediaAssetData) is true)
+                        {
+                            var audioName = akMediaAsset.MediaName ?? $"{akAudioEventData.Outer.Name} ({akMediaAsset.ID})";
+                            akMediaAssetData.Decode(shouldDecompress, out var audioFormat, out var data);
+
+                            SaveAndPlaySound(audioName, audioFormat, data, saveAudio);
+                        }
+                    }
+                }
                 return false;
             }
             case UWorld when isNone && UserSettings.Default.PreviewWorlds:

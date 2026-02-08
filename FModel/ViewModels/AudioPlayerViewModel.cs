@@ -617,6 +617,16 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
                 _ => throw new NotSupportedException()
             };
 
+            if (wavData.Length is 0)
+            {
+                if (TryConvert(out var wavFilePathFallback))
+                {
+                    var newAudioFallback = new AudioFile(SelectedAudioFile.Id, new FileInfo(wavFilePathFallback));
+                    Replace(newAudioFallback);
+                    return true;
+                }
+            }
+
             string wavFilePath = Path.Combine(
                 UserSettings.Default.AudioDirectory,
                 SelectedAudioFile.FilePath.TrimStart('/'));
