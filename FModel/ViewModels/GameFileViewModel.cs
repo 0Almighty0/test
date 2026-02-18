@@ -21,6 +21,7 @@ using CUE4Parse.UE4.Assets.Exports.CustomizableObject;
 using CUE4Parse.UE4.Assets.Exports.Engine;
 using CUE4Parse.UE4.Assets.Exports.Engine.Font;
 using CUE4Parse.UE4.Assets.Exports.Fmod;
+using CUE4Parse.UE4.Assets.Exports.FMod;
 using CUE4Parse.UE4.Assets.Exports.Foliage;
 using CUE4Parse.UE4.Assets.Exports.Internationalization;
 using CUE4Parse.UE4.Assets.Exports.LevelSequence;
@@ -240,6 +241,10 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 USoundAtomCue or UAkAudioEvent or USoundCue or UFMODEvent
                     or UAkAssetData or UAkAssetPlatformData => (EAssetCategory.AudioEvent, EBulkType.Audio),
 
+                UFMODBankLookup => (EAssetCategory.Data, EBulkType.None),
+
+                UFMODBus or UFMODSnapshot or UFMODSnapshotReverb or UFMODVCA => (EAssetCategory.Audio, EBulkType.None),
+
                 UFMODBank or UAkAudioBank or UAtomWaveBank or UAkInitBank => (EAssetCategory.SoundBank, EBulkType.Audio),
 
                 UWwiseAssetLibrary or USoundBase or UAkMediaAssetData or UAtomCueSheet
@@ -320,7 +325,8 @@ public class GameFileViewModel(GameFile asset) : ViewModel
     private Task ResolveByExtensionAsync(EResolveCompute resolve)
     {
         Resolved |= EResolveCompute.Preview;
-        switch (Asset.Extension)
+        var lowercaseExtension = Asset.Extension.ToLowerInvariant();
+        switch (lowercaseExtension)
         {
             case "uproject":
             case "uefnproject":
@@ -393,7 +399,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                     stream.Position = 0;
 
                     SKBitmap bitmap;
-                    if (Asset.Extension == "svg")
+                    if (lowercaseExtension == "svg")
                     {
                         var svg = new SKSvg();
                         svg.Load(stream);
@@ -415,7 +421,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                         bitmap = SKBitmap.Decode(stream);
                     }
 
-                    using var image = bitmap.Encode(Asset.Extension == "jpg" ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, 100);
+                    using var image = bitmap.Encode(lowercaseExtension == "jpg" ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, 100);
                     SetPreviewImage(image);
 
                     bitmap.Dispose();
