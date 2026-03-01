@@ -196,7 +196,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
             if (pointer?.Object is null)
                 return;
 
-            var dummy = ((AbstractUePackage) pkg).ConstructObject(pointer.Class?.Object?.Value as UStruct, pkg);
+            var dummy = ((AbstractUePackage) pkg).ConstructObject(pointer.Class, pkg);
             ResolvedAssetType = dummy.ExportType;
 
             (AssetCategory, AssetActions) = dummy switch

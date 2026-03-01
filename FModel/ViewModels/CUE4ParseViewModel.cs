@@ -1037,7 +1037,7 @@ public class CUE4ParseViewModel : ViewModel
         var pointer = new FPackageIndex(pkg, index + 1).ResolvedObject;
         if (pointer?.Object is null) return false;
 
-        var dummy = ((AbstractUePackage) pkg).ConstructObject(pointer.Class?.Object?.Value as UStruct, pkg);
+        var dummy = ((AbstractUePackage) pkg).ConstructObject(pointer.Class, pkg);
         switch (dummy)
         {
             case UVerseDigest when isNone && pointer.Object.Value is UVerseDigest verseDigest:
@@ -1381,7 +1381,7 @@ public class CUE4ParseViewModel : ViewModel
             if (pointer?.Object is null && pointer.Class?.Object?.Value is null)
                 continue;
 
-            var dummy = ((AbstractUePackage) pkg).ConstructObject(pointer.Class?.Object?.Value as UStruct, pkg);
+            var dummy = ((AbstractUePackage) pkg).ConstructObject(pointer.Class, pkg);
             if (dummy is not UClass || pointer.Object.Value is not UClass blueprint)
                 continue;
 
