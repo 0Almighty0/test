@@ -158,4 +158,5 @@ public enum EAssetCategory : uint
     Particle = AssetCategoryExtensions.CategoryBase + (9 << 16),
     GameSpecific = AssetCategoryExtensions.CategoryBase + (10 << 16),
         Borderlands = GameSpecific + 1,
+        Aion2 = GameSpecific + 2,
 }

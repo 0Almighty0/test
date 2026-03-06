@@ -964,7 +964,7 @@ public class CUE4ParseViewModel : ViewModel
             }
             else if (entry.NameWithoutExtension.Equals("L10NString"))
             {
-                var l10nData = new FAion2L10NFile(entry);
+                var l10nData = new FAion2L10NFile(entry, Provider);
                 TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(l10nData, Formatting.Indented), saveProperties, updateUi);
             }
             else
