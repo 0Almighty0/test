@@ -598,6 +598,9 @@ public class CUE4ParseViewModel : ViewModel
         foreach (var f in folder.Folders) ExportFolder(cancellationToken, f);
     }
 
+    public void ExtractFolder(CancellationToken cancellationToken, TreeItem folder, EBulkType bulk)
+    => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset, TabControl.HasNoTabs, bulk));
+
     public void ExtractFolder(CancellationToken cancellationToken, TreeItem folder)
         => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset, TabControl.HasNoTabs));
 

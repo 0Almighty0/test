@@ -107,6 +107,7 @@ public enum EBulkType
     Animations =    1 << 4,
     Audio =         1 << 5,
     Code =          1 << 6,
+    Raw =           1 << 7,
 }
 
 public enum EAssetCategory : uint
