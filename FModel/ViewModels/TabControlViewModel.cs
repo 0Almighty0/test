@@ -1,6 +1,17 @@
 using System;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Windows;
+using System.Windows.Media.Imaging;
+using CUE4Parse.FileProvider.Objects;
+using CUE4Parse.UE4.Assets.Exports.Texture;
+using CUE4Parse.Utils;
+using CUE4Parse_Conversion.Textures;
 using FModel.Extensions;
 using FModel.Framework;
+using FModel.Services;
 using FModel.Settings;
 using FModel.ViewModels.Commands;
 using FModel.Views.Resources.Controls;
@@ -8,15 +19,6 @@ using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using Serilog;
 using SkiaSharp;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
-using System.Windows;
-using System.Windows.Media.Imaging;
-using CUE4Parse.UE4.Assets.Exports.Texture;
-using CUE4Parse_Conversion.Textures;
-using CUE4Parse.FileProvider.Objects;
-using CUE4Parse.Utils;
 
 namespace FModel.ViewModels;
 
@@ -412,6 +414,7 @@ public class TabItem : ViewModel
     {
         if (File.Exists(path))
         {
+            Interlocked.Increment(ref ApplicationService.ApplicationView.CUE4Parse.ExportedCount);
             Log.Information("{FileName} successfully saved", fileName);
             if (updateUi)
             {

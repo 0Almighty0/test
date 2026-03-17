@@ -162,6 +162,8 @@ public class CUE4ParseViewModel : ViewModel
     public CriWareProvider CriWareProvider => _criWareProviderLazy?.Value;
     public ConcurrentBag<string> UnknownExtensions = [];
 
+    public int ExportedCount;
+
     public CUE4ParseViewModel()
     {
         var currentDir = UserSettings.Default.CurrentDir;
@@ -1426,6 +1428,7 @@ public class CUE4ParseViewModel : ViewModel
                 if (conversionSuccess) savedAudioPath = wavFilePath;
             }
 
+            Interlocked.Increment(ref ExportedCount);
             Log.Information("Successfully saved {FilePath}", savedAudioPath);
             if (updateUi && conversionSuccess)
             {
@@ -1438,6 +1441,9 @@ public class CUE4ParseViewModel : ViewModel
 
             return;
         }
+
+        if (!updateUi)
+            return;
 
         // TODO
         // since we are currently in a thread, the audio player's lifetime (memory-wise) will keep the current thread up and running until fmodel itself closes
@@ -1456,6 +1462,7 @@ public class CUE4ParseViewModel : ViewModel
         var toSaveDirectory = new DirectoryInfo(UserSettings.Default.ModelDirectory);
         if (toSave.TryWriteToDir(toSaveDirectory, out var label, out var savedFilePath))
         {
+            Interlocked.Increment(ref ExportedCount);
             Log.Information("Successfully saved {FilePath}", savedFilePath);
             if (updateUi)
             {
@@ -1489,6 +1496,7 @@ public class CUE4ParseViewModel : ViewModel
                 }
             });
 
+            Interlocked.Increment(ref ExportedCount);
             Log.Information("{FileName} successfully exported", entry.Name);
             if (updateUi)
             {

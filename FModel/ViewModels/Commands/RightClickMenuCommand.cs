@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -16,9 +17,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
 {
     private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
 
-    public RightClickMenuCommand(ApplicationViewModel contextViewModel) : base(contextViewModel)
-    {
-    }
+    public RightClickMenuCommand(ApplicationViewModel contextViewModel) : base(contextViewModel) { }
 
     private enum EAction
     {
@@ -47,7 +46,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
         var assets = param
             .Select(static item => item switch
             {
-                GameFile gf => gf,
+                GameFile gf => gf, // Search view passes GameFile directly
                 GameFileViewModel gvm => gvm.Asset,
                 _ => null
             })
@@ -74,6 +73,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
             _ => throw new ArgumentOutOfRangeException("Unsupported asset action."),
         };
 
+        Interlocked.Exchange(ref contextViewModel.CUE4Parse.ExportedCount, 0);
         await _threadWorkerView.Begin(cancellationToken =>
         {
             if (action is EAction.Show)
@@ -126,11 +126,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                 folderAction(folder);
 
                 var path = Path.Combine(dirType, UserSettings.Default.KeepDirectoryStructure ? folder.PathAtThisPoint : folder.PathAtThisPoint.SubstringAfterLast('/')).Replace('\\', '/');
-                FLogger.Append(ELog.Information, () =>
-                {
-                    FLogger.Text($"Successfully exported {filetype} from ", Constants.WHITE);
-                    FLogger.Link(folder.PathAtThisPoint, path, true);
-                });
+                LogExport(contextViewModel, folder.PathAtThisPoint, path, dirType, filetype);
             }
 
             Action<GameFile, EBulkType, bool> fileAction = bulktype switch
@@ -155,13 +151,31 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                 if (update)
                 {
                     var path = Path.Combine(dirType, UserSettings.Default.KeepDirectoryStructure ? directory : directory.SubstringAfterLast('/')).Replace('\\', '/');
-                    FLogger.Append(ELog.Information, () =>
-                    {
-                        FLogger.Text($"Successfully exported {list.Length} {filetype} from ", Constants.WHITE);
-                        FLogger.Link(directory, path, true);
-                    });
+                    LogExport(contextViewModel, directory, path, dirType, filetype);
                 }
             }
         });
+    }
+
+    private void LogExport(ApplicationViewModel contextViewModel, string directory, string path, string basePath, string fileType)
+    {
+        if (contextViewModel.CUE4Parse.ExportedCount > 0)
+        {
+            FLogger.Append(ELog.Information, () =>
+            {
+                FLogger.Text($"Successfully exported {contextViewModel.CUE4Parse.ExportedCount} {fileType} from ", Constants.WHITE);
+                FLogger.Link(directory, Path.Exists(path) ? path : basePath, true);
+            });
+        }
+        else
+        {
+            // Not an error because folder simply might not contain type of asset user is trying to save
+            FLogger.Append(ELog.Warning, () =>
+            {
+                FLogger.Text($"Failed to export any {fileType} from {directory}", Constants.WHITE, true);
+            });
+        }
+
+        Interlocked.Exchange(ref contextViewModel.CUE4Parse.ExportedCount, 0);
     }
 }
