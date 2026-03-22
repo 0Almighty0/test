@@ -10,7 +10,8 @@
                              xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
                              WindowStartupLocation="CenterScreen" ResizeMode="NoResize" IconVisibility="Collapsed" SizeToContent="Height"
                              MinHeight="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.10'}"
-                             Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.45'}">
+                             Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.45'}"
+                             AllowDrop="True">
     <adonisControls:AdonisWindow.Style>
         <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}" >
             <Setter Property="Title" Value="Settings" />
@@ -160,7 +161,7 @@
                               IsChecked="{Binding KeepDirectoryStructure, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 10"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
 
-                    <TextBlock Grid.Row="10" Grid.Column="0" Text="Local Mapping File" VerticalAlignment="Center" Margin="0 5 0 0" />
+                    <TextBlock Grid.Row="10" Grid.Column="0" Text="Local Mapping File (drag &amp; drop)" VerticalAlignment="Center" Margin="0 5 0 0" />
                     <CheckBox Grid.Row="10" Grid.Column="2" Margin="0 5 0 0"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                               Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
@@ -701,5 +702,8 @@
                         HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="OK" Click="OnClick" />
             </Grid>
         </Border>
+        <controls:UsmapDropOverlay Grid.RowSpan="99"
+                                   Grid.ColumnSpan="99"
+                                   Panel.ZIndex="1000" />
     </Grid>
 </adonisControls:AdonisWindow>
