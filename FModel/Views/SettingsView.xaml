@@ -43,7 +43,6 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -249,19 +248,14 @@
                               Margin="0 5 0 10"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
 
-                    <TextBlock Grid.Row="20" Grid.Column="0" Text="Max Wwise Bank (.BNK) Prefetch" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <Slider Grid.Row="20" Grid.Column="2" Grid.ColumnSpan="5" TickPlacement="None" Minimum="0" Maximum="2048" Ticks="0,8,32,128,256,512,1024,2048"
-                            AutoToolTipPlacement="BottomRight" IsMoveToPointEnabled="True" IsSnapToTickEnabled="True" Margin="0 5 0 5"
-                            Value="{Binding WwiseMaxBnkPrefetch, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"/>
-
-                    <TextBlock Grid.Row="21"
+                    <TextBlock Grid.Row="20"
                                Grid.Column="0"
                                Text="CRIWARE Decryption Key"
                                VerticalAlignment="Center"
                                Margin="0 0 0 10" />
 
                     <TextBox x:Name="CriwareKeyBox"
-                             Grid.Row="21"
+                             Grid.Row="20"
                              Grid.Column="2"
                              Grid.ColumnSpan="5"
                              Margin="0 5 0 10"

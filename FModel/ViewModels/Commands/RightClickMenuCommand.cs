@@ -74,6 +74,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
         };
 
         Interlocked.Exchange(ref contextViewModel.CUE4Parse.ExportedCount, 0);
+        Interlocked.Exchange(ref contextViewModel.CUE4Parse.FailedExportCount, 0);
         await _threadWorkerView.Begin(cancellationToken =>
         {
             if (action is EAction.Show)
@@ -167,15 +168,24 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                 FLogger.Link(directory, Path.Exists(path) ? path : basePath, true);
             });
         }
-        else
+        else if (contextViewModel.CUE4Parse.FailedExportCount == 0)
         {
             // Not an error because folder simply might not contain type of asset user is trying to save
             FLogger.Append(ELog.Warning, () =>
             {
-                FLogger.Text($"Failed to export any {fileType} from {directory}", Constants.WHITE, true);
+                FLogger.Text($"Failed to find any {fileType} in {directory}", Constants.WHITE, true);
+            });
+        }
+
+        if (contextViewModel.CUE4Parse.FailedExportCount > 0)
+        {
+            FLogger.Append(ELog.Error, () =>
+            {
+                FLogger.Text($"Failed to export {contextViewModel.CUE4Parse.FailedExportCount} {fileType} from {directory}", Constants.WHITE, true);
             });
         }
 
         Interlocked.Exchange(ref contextViewModel.CUE4Parse.ExportedCount, 0);
+        Interlocked.Exchange(ref contextViewModel.CUE4Parse.FailedExportCount, 0);
     }
 }

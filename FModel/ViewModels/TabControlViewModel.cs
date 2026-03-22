@@ -376,8 +376,7 @@ public class TabItem : ViewModel
     public void SaveImage() => SaveImage(SelectedImage, true);
     private void SaveImage(TabImage image, bool updateUi)
     {
-        if (image == null)
-            return;
+        if (image is null) return;
 
         var path = Path.Combine(UserSettings.Default.TextureDirectory, UserSettings.Default.KeepDirectoryStructure ? Entry.Directory : "", image.ExportName).Replace('\\', '/');
 
@@ -394,6 +393,7 @@ public class TabItem : ViewModel
 
     private void SaveImage(TabImage image, string path)
     {
+        if (image.ImageBuffer is null)  return;
         using var fs = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Read);
         fs.Write(image.ImageBuffer, 0, image.ImageBuffer.Length);
     }
@@ -427,6 +427,7 @@ public class TabItem : ViewModel
         }
         else
         {
+            Interlocked.Increment(ref ApplicationService.ApplicationView.CUE4Parse.FailedExportCount);
             Log.Error("{FileName} could not be saved", fileName);
             if (updateUi)
                 FLogger.Append(ELog.Error, () => FLogger.Text($"Could not save '{fileName}'", Constants.WHITE, true));
