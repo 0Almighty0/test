@@ -10,6 +10,9 @@
         xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
         xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
         xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+        AllowDrop="True"
+        Drop="OnDrop"
+        PreviewDragOver="OnPreviewDragOver"
         WindowStartupLocation="CenterScreen" Closing="OnClosing" Loaded="OnLoaded" PreviewKeyDown="OnWindowKeyDown"
         Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.95'}"
         Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.90'}">

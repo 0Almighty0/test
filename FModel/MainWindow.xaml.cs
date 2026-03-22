@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -373,5 +374,51 @@ public partial class MainWindow
 
         childFolder.IsExpanded = true;
         childFolder.IsSelected = true;
+    }
+
+    private void OnPreviewDragOver(object sender, DragEventArgs e)
+    {
+        if (e.Data.GetDataPresent(DataFormats.FileDrop))
+        {
+            var files = (string[]) e.Data.GetData(DataFormats.FileDrop);
+            if (_applicationView.Status.IsReady && files.Any(file => Path.GetExtension(file).Equals(".usmap", StringComparison.OrdinalIgnoreCase)))
+            {
+                e.Effects = DragDropEffects.Copy;
+                e.Handled = true;
+                return;
+            }
+        }
+
+        e.Effects = DragDropEffects.None;
+        e.Handled = true;
+    }
+
+    private async void OnDrop(object sender, DragEventArgs e)
+    {
+        if (!e.Data.GetDataPresent(DataFormats.FileDrop))
+            return;
+
+        var files = (string[]) e.Data.GetData(DataFormats.FileDrop);
+        var usmapFile = files.FirstOrDefault(file => Path.GetExtension(file).Equals(".usmap", StringComparison.OrdinalIgnoreCase));
+
+        if (usmapFile is null)
+            return;
+
+        UserSettings.IsEndpointValid(EEndpointType.Mapping, out var oldMappingsEndpoint);
+        try
+        {
+            var newMappingsEndpoint = new EndpointSettings() { Overwrite = true, FilePath = usmapFile };
+            UserSettings.Default.CurrentDir.Endpoints[(int) EEndpointType.Mapping] = newMappingsEndpoint;
+            await _applicationView.CUE4Parse.InitMappings();
+            _applicationView.SettingsView.MappingEndpoint = newMappingsEndpoint;
+        }
+        catch (Exception ex)
+        {
+            UserSettings.Default.CurrentDir.Endpoints[(int) EEndpointType.Mapping] = oldMappingsEndpoint;
+            FLogger.Append(ELog.Error, () =>
+            {
+                FLogger.Text($"Failed to load mapping file: {ex.Message}", Constants.WHITE, true);
+            });
+        }
     }
 }
