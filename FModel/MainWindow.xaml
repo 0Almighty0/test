@@ -629,6 +629,10 @@
                             <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AlertBrush}}" />
                             <Setter Property="Foreground" Value="White" />
                         </DataTrigger>
+                        <DataTrigger Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Configuring}">
+                            <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AlertBrush}}" />
+                            <Setter Property="Foreground" Value="White" />
+                        </DataTrigger>
                         <DataTrigger Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Stopped}">
                             <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                             <Setter Property="Foreground" Value="White" />
@@ -710,7 +714,7 @@
                 </StackPanel>
             </StatusBarItem>
         </StatusBar>
-        <controls:UsmapDropOverlay Grid.RowSpan="99"
-                                   Panel.ZIndex="1000" />
+        <controls:DropOverlay Grid.RowSpan="99"
+                              Panel.ZIndex="1000" />
     </Grid>
 </adonisControls:AdonisWindow>

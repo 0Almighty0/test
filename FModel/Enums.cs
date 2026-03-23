@@ -27,6 +27,7 @@ public enum SettingsOut
 public enum EStatusKind
 {
     Ready, // ready
+    Configuring, // waiting for user input
     Loading, // doing stuff
     Stopping, // trying to stop
     Stopped, // stopped

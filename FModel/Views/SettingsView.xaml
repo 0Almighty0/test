@@ -702,8 +702,8 @@
                         HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="OK" Click="OnClick" />
             </Grid>
         </Border>
-        <controls:UsmapDropOverlay Grid.RowSpan="99"
-                                   Grid.ColumnSpan="99"
-                                   Panel.ZIndex="1000" />
+        <controls:DropOverlay Grid.RowSpan="99"
+                              Grid.ColumnSpan="99"
+                              Panel.ZIndex="1000" />
     </Grid>
 </adonisControls:AdonisWindow>
