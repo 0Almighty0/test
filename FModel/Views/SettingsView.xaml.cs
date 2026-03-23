@@ -155,7 +155,11 @@ public partial class SettingsView
     private void OpenCustomVersions(object sender, RoutedEventArgs e)
     {
         var editor = new DictionaryEditor(_applicationView.SettingsView.SelectedCustomVersions, "Versioning Configuration (Custom Versions)");
+        if (_applicationView.Status.IsReady)
+            _applicationView.Status.SetStatus(EStatusKind.Configuring);
         var result = editor.ShowDialog();
+        if (_applicationView.Status.IsReady)
+            _applicationView.Status.SetStatus(EStatusKind.Ready);
         if (!result.HasValue || !result.Value)
             return;
 
@@ -165,7 +169,11 @@ public partial class SettingsView
     private void OpenOptions(object sender, RoutedEventArgs e)
     {
         var editor = new DictionaryEditor(_applicationView.SettingsView.SelectedOptions, "Versioning Configuration (Options)");
+        if (_applicationView.Status.IsReady)
+            _applicationView.Status.SetStatus(EStatusKind.Configuring);
         var result = editor.ShowDialog();
+        if (_applicationView.Status.IsReady)
+            _applicationView.Status.SetStatus(EStatusKind.Ready);
         if (!result.HasValue || !result.Value)
             return;
 
@@ -175,7 +183,11 @@ public partial class SettingsView
     private void OpenMapStructTypes(object sender, RoutedEventArgs e)
     {
         var editor = new DictionaryEditor(_applicationView.SettingsView.SelectedMapStructTypes, "Versioning Configuration (MapStructTypes)");
+        if (_applicationView.Status.IsReady)
+            _applicationView.Status.SetStatus(EStatusKind.Configuring);
         var result = editor.ShowDialog();
+        if (_applicationView.Status.IsReady)
+            _applicationView.Status.SetStatus(EStatusKind.Ready);
         if (!result.HasValue || !result.Value)
             return;
 
@@ -186,14 +198,22 @@ public partial class SettingsView
     {
         var editor = new EndpointEditor(
             _applicationView.SettingsView.AesEndpoint, "Endpoint Configuration (AES)", EEndpointType.Aes);
+        if (_applicationView.Status.IsReady)
+            _applicationView.Status.SetStatus(EStatusKind.Configuring);
         editor.ShowDialog();
+        if (_applicationView.Status.IsReady)
+            _applicationView.Status.SetStatus(EStatusKind.Ready);
     }
 
     private void OpenMappingEndpoint(object sender, RoutedEventArgs e)
     {
         var editor = new EndpointEditor(
             _applicationView.SettingsView.MappingEndpoint, "Endpoint Configuration (Mapping)", EEndpointType.Mapping);
+        if (_applicationView.Status.IsReady)
+            _applicationView.Status.SetStatus(EStatusKind.Configuring);
         editor.ShowDialog();
+        if (_applicationView.Status.IsReady)
+            _applicationView.Status.SetStatus(EStatusKind.Ready);
     }
 
     private void CriwareKeyBox_Loaded(object sender, RoutedEventArgs e)
