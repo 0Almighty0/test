@@ -61,6 +61,8 @@ public partial class SettingsView
 
         _applicationView.CUE4Parse.Provider.ReadScriptData = UserSettings.Default.ReadScriptData;
         _applicationView.CUE4Parse.Provider.ReadShaderMaps = UserSettings.Default.ReadShaderMaps;
+
+        UserSettings.Save();
     }
 
     private void OnBrowseOutput(object sender, RoutedEventArgs e)
@@ -74,6 +76,7 @@ public partial class SettingsView
         UserSettings.Default.PropertiesDirectory = path;
         UserSettings.Default.TextureDirectory = path;
         UserSettings.Default.AudioDirectory = path;
+        UserSettings.Default.CodeDirectory = path;
     }
 
     private void OnBrowseDirectories(object sender, RoutedEventArgs e)

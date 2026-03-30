@@ -93,7 +93,7 @@ public partial class EndpointEditor
 
     private void OnEvaluator(object sender, RoutedEventArgs e)
     {
-        Process.Start(new ProcessStartInfo { FileName = "https://jsonpath.herokuapp.com/", UseShellExecute = true });
+        Process.Start(new ProcessStartInfo { FileName = "https://jsonpath.com/", UseShellExecute = true });
     }
 }
 

@@ -225,14 +225,12 @@ public class CUE4ParseViewModel : ViewModel
 
     public async Task Initialize()
     {
-        await _apiEndpointView.EpicApi.VerifyAuth(CancellationToken.None);
         await _threadWorkerView.Begin(cancellationToken =>
         {
             Provider.OnDemandOptions = new IoStoreOnDemandOptions
             {
                 ChunkHostUri = new Uri("https://download.epicgames.com/", UriKind.Absolute),
                 ChunkCacheDirectory = Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data")),
-                Authorization = new AuthenticationHeaderValue("Bearer", UserSettings.Default.LastAuthResponse.AccessToken),
                 Timeout = TimeSpan.FromSeconds(30)
             };
 
@@ -285,6 +283,20 @@ public class CUE4ParseViewModel : ViewModel
                             {
                                 p.RegisterVfs(fileManifest.FileName, [fileManifest.GetStream()],
                                     it => new FRandomAccessStreamArchive(it, manifest.FindFile(it)!.GetStream(), p.Versions));
+                            });
+
+                            var manifests = _apiEndpointView.DillyApi.GetManifests(cancellationToken);
+                            var downloadUrl = manifests.First(x => x.AppName == "Fortnite_Studio").DownloadUrl;
+
+                            using var client = new HttpClient();
+                            var manifestBytes = client.GetByteArrayAsync(downloadUrl).GetAwaiter().GetResult();
+
+                            var uefnManifest = FBuildPatchAppManifest.Deserialize(manifestBytes, manifestOptions);
+
+                            Parallel.ForEach(uefnManifest.Files.Where(x => _fnLiveRegex.IsMatch(x.FileName)), fileManifest =>
+                            {
+                                p.RegisterVfs(fileManifest.FileName, [fileManifest.GetStream()],
+                                    it => new FRandomAccessStreamArchive(it, uefnManifest.FindFile(it)!.GetStream(), p.Versions));
                             });
 
                             var elapsedTime = Stopwatch.GetElapsedTime(startTs);
@@ -622,6 +634,9 @@ public class CUE4ParseViewModel : ViewModel
     public void AudioFolder(CancellationToken cancellationToken, TreeItem folder)
         => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset, TabControl.HasNoTabs, EBulkType.Audio | EBulkType.Auto));
 
+    public void CodeFolder(CancellationToken cancellationToken, TreeItem folder)
+        => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset, TabControl.HasNoTabs, EBulkType.Code | EBulkType.Auto));
+
     public void Extract(CancellationToken cancellationToken, GameFile entry, bool addNewTab = false, EBulkType bulk = EBulkType.None)
     {
         ApplicationService.ApplicationView.IsAssetsExplorerVisible = false;
@@ -635,6 +650,7 @@ public class CUE4ParseViewModel : ViewModel
         var saveProperties = HasFlag(bulk, EBulkType.Properties);
         var saveTextures = HasFlag(bulk, EBulkType.Textures);
         var saveAudio = HasFlag(bulk, EBulkType.Audio);
+        var saveDecompiled = HasFlag(bulk, EBulkType.Code);
         switch (entry.Extension)
         {
             case "uasset":
@@ -647,6 +663,13 @@ public class CUE4ParseViewModel : ViewModel
                 {
                     TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(result.GetDisplayData(saveProperties), Formatting.Indented), saveProperties, updateUi);
                     if (saveProperties) break; // do not search for viewable exports if we are dealing with jsons
+                }
+
+                if (saveDecompiled)
+                {
+                    if (Decompile(entry, false))
+                        TabControl.SelectedTab.SaveDecompiled(updateUi);
+                    break;
                 }
 
                 for (var i = result.InclusiveStart; i < result.ExclusiveEnd; i++)
@@ -1365,11 +1388,13 @@ public class CUE4ParseViewModel : ViewModel
     }
 
 
-    public void Decompile(GameFile entry)
+    public bool Decompile(GameFile entry, bool AddTab = true)
     {
-        ApplicationService.ApplicationView.IsAssetsExplorerVisible = false;
-
-        if (TabControl.CanAddTabs) TabControl.AddTab(entry);
+        if (TabControl.CanAddTabs && AddTab)
+        {
+            ApplicationService.ApplicationView.IsAssetsExplorerVisible = false;
+            TabControl.AddTab(entry);
+        }
         else TabControl.SelectedTab.SoftReset(entry);
 
         TabControl.SelectedTab.TitleExtra = "Decompiled";
@@ -1398,18 +1423,21 @@ public class CUE4ParseViewModel : ViewModel
             if (dummy is not UClass || pointer.Object.Value is not UClass blueprint)
                 continue;
 
-            cppList.Add(blueprint.DecompileBlueprintToPseudo(cookedMetaData));
+            cppList.Add(blueprint.DecompileBlueprintToPseudo(pkg.Mappings, cookedMetaData));
         }
 
+        if (cppList.Count == 0) return false;
         var cpp = cppList.Count > 1 ? string.Join("\n\n", cppList) : cppList.FirstOrDefault() ?? string.Empty;
         if (entry.Path.Contains("_Verse.uasset"))
         {
             cpp = Regex.Replace(cpp, "__verse_0x[a-fA-F0-9]{8}_", ""); // UnmangleCasedName
         }
         cpp = Regex.Replace(cpp, @"CallFunc_([A-Za-z0-9_]+)_ReturnValue", "$1");
-
+        cpp = Regex.Replace(cpp, @"K2Node_DynamicCast_([A-Za-z0-9_]+)", "$1");
+        cpp = Regex.Replace(cpp, @"K2Node_([A-Za-z0-9_]+)", "$1");
 
         TabControl.SelectedTab.SetDocumentText(cpp, false, false);
+        return true;
     }
 
     private void SaveAndPlaySound(CancellationToken cancellationToken, string fullPath, string ext, byte[] data, bool saveAudio, bool updateUi)

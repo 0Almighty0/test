@@ -69,6 +69,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
             "Save_Models" => (EAction.Export, EShowAssetType.None, EBulkType.Meshes),
             "Save_Animations" => (EAction.Export, EShowAssetType.None, EBulkType.Animations),
             "Save_Audio" => (EAction.Export, EShowAssetType.None, EBulkType.Audio),
+            "Save_Code" => (EAction.Export, EShowAssetType.None, EBulkType.Code),
 
             _ => throw new ArgumentOutOfRangeException("Unsupported asset action."),
         };
@@ -109,6 +110,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                 EBulkType.Meshes => (UserSettings.Default.ModelDirectory, "models"),
                 EBulkType.Animations => (UserSettings.Default.ModelDirectory, "animations"),
                 EBulkType.Audio => (UserSettings.Default.AudioDirectory, "audio files"),
+                EBulkType.Code => (UserSettings.Default.CodeDirectory, "code files"),
                 _ => (null, null),
             };
 
