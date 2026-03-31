@@ -1244,7 +1244,7 @@ public class CUE4ParseViewModel : ViewModel
                 var shouldDecompress = UserSettings.Default.CompressedAudioMode is ECompressedAudio.PlayDecompressed;
                 foreach (var mediaIndex in akAudioEventData.MediaList)
                 {
-                    if (mediaIndex.ResolvedObject?.Object?.Value is UAkMediaAsset akMediaAsset)
+                    if (mediaIndex?.Object?.Value is UAkMediaAsset akMediaAsset)
                     {
                         if (akMediaAsset.CurrentMediaAssetData?.ResolvedObject?.Object?.Value is UAkMediaAssetData akMediaAssetData)
                         {
