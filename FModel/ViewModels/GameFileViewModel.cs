@@ -358,6 +358,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 break;
             case "stinfo":
             case "ushaderbytecode":
+            case "upipelinecache":
                 AssetCategory = EAssetCategory.ByteCode;
                 break;
             case "wav":
@@ -438,6 +439,11 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 break;
             case "dat" when GameVersion is EGame.GAME_Aion2:
                 AssetCategory = EAssetCategory.Aion2;
+                break;
+            case "bytes" when GameVersion is EGame.GAME_RocoKingdomWorld:
+            case "non" when GameVersion is EGame.GAME_RocoKingdomWorld:
+            case "cam" when GameVersion is EGame.GAME_RocoKingdomWorld:
+                AssetCategory = EAssetCategory.RocoKingdomWorld;
                 break;
             default:
                 AssetCategory = EAssetCategory.All; // just so it sets resolved
