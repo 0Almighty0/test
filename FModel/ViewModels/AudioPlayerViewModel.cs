@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -664,23 +665,11 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
     public static bool TryConvert(string inputFilePath, byte[] inputFileData, out string wavFilePath, bool updateUi = false)
     {
         wavFilePath = string.Empty;
-        var vgmFilePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", "test.exe");
-        if (!File.Exists(vgmFilePath))
-        {
-            vgmFilePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", "vgmstream-cli.exe");
-            if (!File.Exists(vgmFilePath))
-            {
-                Log.Error("Failed to convert {InputFilePath}, vgmstream is missing", inputFilePath);
-                FLogger.Append(ELog.Error, () =>
-                {
-                    FLogger.Text("Failed to convert audio because vgmstream is missing. See: ", Constants.WHITE);
-                    FLogger.Link("→ link ←", Constants.AUDIO_ISSUE_LINK, true);
-                });
-                return false;
-            }
-        }
+        var vgmStreamPath = TryGetVgmstreamPath();
+        if (string.IsNullOrEmpty(vgmStreamPath))
+            return false;
 
-        var success = TryConvertToWAV(inputFilePath, inputFileData, vgmFilePath, true, out wavFilePath);
+        var success = TryConvertToWav(inputFilePath, inputFileData, vgmStreamPath, true, out wavFilePath);
 
         if (!success)
         {
@@ -713,10 +702,10 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
             return false;
         }
 
-        return TryConvertToWAV(SelectedAudioFile.FilePath, SelectedAudioFile.Data, decoderPath, false, out rawFilePath);
+        return TryConvertToWav(SelectedAudioFile.FilePath, SelectedAudioFile.Data, decoderPath, false, out rawFilePath);
     }
 
-    private static bool TryConvertToWAV(string inputFilePath, byte[] inputFileData, string converterPath, bool usevgmstream, out string wavFilePath)
+    private static bool TryConvertToWav(string inputFilePath, byte[] inputFileData, string converterPath, bool usevgmstream, out string wavFilePath)
     {
         wavFilePath = Path.ChangeExtension(inputFilePath, ".wav");
         var directory = Path.GetDirectoryName(inputFilePath);
@@ -745,5 +734,75 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
         }
 
         return success;
+    }
+
+    private static string TryGetVgmstreamPath()
+    {
+        var vgmFilePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", "test.exe");
+        if (!File.Exists(vgmFilePath))
+        {
+            vgmFilePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", "vgmstream-cli.exe");
+            if (!File.Exists(vgmFilePath))
+            {
+                Log.Error("Failed to convert audio, vgmstream is missing");
+                FLogger.Append(ELog.Error, () =>
+                {
+                    FLogger.Text("Failed to convert audio because vgmstream is missing. See: ", Constants.WHITE);
+                    FLogger.Link("→ link ←", Constants.AUDIO_ISSUE_LINK, true);
+                });
+
+                return string.Empty;
+            }
+        }
+
+        return vgmFilePath;
+    }
+
+    // Since Square Enix soundbanks are pretty niche, let's just use vgmstream to extract them
+    public static List<string> ExtractSquareEnixAudio(string sabPath, byte[] sqexData)
+    {
+        var vgmStreamPath = TryGetVgmstreamPath();
+        if (string.IsNullOrEmpty(vgmStreamPath))
+            return [];
+        if (sqexData.Length == 0)
+            return [];
+
+        var extractionDir = Path.GetDirectoryName(sabPath);
+        Directory.CreateDirectory(extractionDir);
+
+        // There's no clean way to know what was extracted with vgmstream (it's a soundbank, might contain multiple sounds) so we're monitoring extraction directory
+        var capturedFiles = new ConcurrentBag<string>();
+        using var watcher = new FileSystemWatcher(extractionDir)
+        {
+            Filter = "*.wav",
+            NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite | NotifyFilters.CreationTime
+        };
+
+        void handler(object s, FileSystemEventArgs e) => capturedFiles.Add(e.FullPath);
+
+        watcher.Created += handler;
+        watcher.Changed += handler;
+        watcher.EnableRaisingEvents = true;
+
+        var tempSab = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".sab");
+        File.WriteAllBytes(tempSab, sqexData);
+
+        var startInfo = new ProcessStartInfo
+        {
+            FileName = vgmStreamPath,
+            Arguments = $"-S 0 -o \"{extractionDir}\\?n_?s.wav\" \"{tempSab}\"",
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+
+        using (var process = Process.Start(startInfo))
+        {
+            process?.WaitForExit(15000);
+        }
+
+        File.Delete(tempSab);
+        watcher.EnableRaisingEvents = false;
+
+        return [.. capturedFiles.Distinct()];
     }
 }
