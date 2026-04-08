@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,6 +24,7 @@ using CUE4Parse.GameTypes.Borderlands3.Assets.Exports;
 using CUE4Parse.GameTypes.Borderlands4.Assets.Exports;
 using CUE4Parse.GameTypes.Borderlands4.Wwise;
 using CUE4Parse.GameTypes.KRD.Assets.Exports;
+using CUE4Parse.GameTypes.RocoKingdomWorld.Assets.Objects;
 using CUE4Parse.GameTypes.SMG.UE4.Assets.Exports.Wwise;
 using CUE4Parse.GameTypes.SquareEnix.UE4.Assets.Exports;
 using CUE4Parse.MappingsProvider;
@@ -683,6 +685,11 @@ public class CUE4ParseViewModel : ViewModel
                 ProcessAion2DatFile(entry, updateUi, saveProperties);
                 break;
             }
+            case "bytes" when Provider.Versions.Game is EGame.GAME_RocoKingdomWorld:
+            {
+                ProcessRocoBinFile(entry, updateUi, saveProperties);
+                break;
+            }
             case "dbc" when Provider.Versions.Game is EGame.GAME_AshesOfCreation:
             {
                 ProcessCacheDBFile(entry, updateUi, saveProperties);
@@ -966,6 +973,40 @@ public class CUE4ParseViewModel : ViewModel
                         FLogger.Text($"There are some packages with an unknown type {entry.Extension}. Check Log file for a full list.", Constants.WHITE, true));
                 }
                 break;
+            }
+        }
+
+        // Roco Kingdom: World
+        void ProcessRocoBinFile(GameFile entry, bool updateUi, bool saveProperties)
+        {
+            TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("json");
+            var nonFileName = "/" + entry.NameWithoutExtension + ".non";
+            var nonPath = Provider.Files.Keys.FirstOrDefault(k => k.EndsWith(nonFileName, StringComparison.OrdinalIgnoreCase));
+
+            // I will only get one localization file because they did not translate any languages, lol
+            var locPathKey = entry.Path.Replace("/BinData/", "/BinLocalize/en_US/").Replace("/BinDataCompressed/", "/BinLocalize/en_US/");
+            var locFileFound = Provider.Files.TryGetValue(locPathKey, out var locEntry);
+
+            if (!string.IsNullOrEmpty(nonPath) && Provider.Files.TryGetValue(nonPath, out var nonEntry))
+            {
+                string json = Encoding.UTF8.GetString(nonEntry.Read());
+                var schema = JsonConvert.DeserializeObject<FRocoSchema>(json);
+                var archive = entry.CreateReader();
+                var locArchive = locFileFound ? new FRocoBinData(locEntry.CreateReader(), null, ERocoBinDataType.BinLocalize) : null;
+
+                var data = entry.PathWithoutExtension switch
+                {
+                    var p when p.Contains("BinDataCompressed") => new FRocoBinData(archive, schema, ERocoBinDataType.BinDataCompressed, locArchive),
+                    var p when p.Contains("BinData") => new FRocoBinData(archive, schema, ERocoBinDataType.BinData, locArchive),
+                    var p when p.Contains("BinLocalize") => new FRocoBinData(archive, null, ERocoBinDataType.BinLocalize),
+                    _ => null
+                };
+
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(data, Formatting.Indented), saveProperties, updateUi);
+            }
+            else if (entry.PathWithoutExtension.Contains("/Bin/"))
+            {
+                throw new Exception($"Could not find associated .non file for {entry.Name}");
             }
         }
 
