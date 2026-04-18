@@ -53,4 +53,5 @@
     <SolidColorBrush x:Key="BorderlandsBrush" Color="Yellow"></SolidColorBrush>
     <SolidColorBrush x:Key="AionBrush" Color="DeepSkyBlue"></SolidColorBrush>
     <SolidColorBrush x:Key="RocoKingdomWorldBrush" Color="#fecf4d"></SolidColorBrush>
+    <SolidColorBrush x:Key="DeltaForceBrush" Color="LightGreen"></SolidColorBrush>
 </ResourceDictionary>

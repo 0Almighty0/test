@@ -23,6 +23,7 @@ using CUE4Parse.GameTypes.AshEchoes.FileProvider;
 using CUE4Parse.GameTypes.Borderlands3.Assets.Exports;
 using CUE4Parse.GameTypes.Borderlands4.Assets.Exports;
 using CUE4Parse.GameTypes.Borderlands4.Wwise;
+using CUE4Parse.GameTypes.DFHO.Assets.Objects;
 using CUE4Parse.GameTypes.KRD.Assets.Exports;
 using CUE4Parse.GameTypes.RocoKingdomWorld.Assets.Objects;
 using CUE4Parse.GameTypes.SMG.UE4.Assets.Exports.Wwise;
@@ -891,6 +892,13 @@ public class CUE4ParseViewModel : ViewModel
                 var header = new FOodleDictionaryArchive(archive).Header;
                 TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(header, Formatting.Indented), saveProperties, updateUi);
 
+                break;
+            }
+            case "ustbin" when Provider.Versions.Game is EGame.GAME_DeltaForce:
+            {
+                var archive = entry.CreateReader();
+                var ustbin = new FDeltaStringTable(archive);
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(ustbin, Formatting.Indented), saveProperties, updateUi);
                 break;
             }
             case "png":

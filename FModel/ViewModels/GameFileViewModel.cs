@@ -446,6 +446,9 @@ public class GameFileViewModel(GameFile asset) : ViewModel
             case "cam" when GameVersion is EGame.GAME_RocoKingdomWorld:
                 AssetCategory = EAssetCategory.RocoKingdomWorld;
                 break;
+            case "ustbin" when GameVersion is EGame.GAME_DeltaForce:
+                AssetCategory = EAssetCategory.DeltaForce;
+                break;
             default:
                 AssetCategory = EAssetCategory.All; // just so it sets resolved
                 break;

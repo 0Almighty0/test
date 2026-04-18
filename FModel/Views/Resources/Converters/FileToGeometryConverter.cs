@@ -92,6 +92,7 @@ public class FileToGeometryConverter : IMultiValueConverter
             EAssetCategory.Borderlands => ("BorderlandsIcon", "BorderlandsBrush"),
             EAssetCategory.Aion2 => ("AionIcon", "AionBrush"),
             EAssetCategory.RocoKingdomWorld => ("RocoKingdomWorldIcon", "RocoKingdomWorldBrush"),
+            EAssetCategory.DeltaForce => ("DeltaForceIcon", "DeltaForceBrush"),
 
             _ => ("AssetIcon", "NeutralBrush")
         };
