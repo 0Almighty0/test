@@ -24,6 +24,7 @@ using CUE4Parse.GameTypes.Borderlands3.Assets.Exports;
 using CUE4Parse.GameTypes.Borderlands4.Assets.Exports;
 using CUE4Parse.GameTypes.Borderlands4.Wwise;
 using CUE4Parse.GameTypes.DFHO.Assets.Objects;
+using CUE4Parse.GameTypes.HonorOfKings.FileProvider;
 using CUE4Parse.GameTypes.KRD.Assets.Exports;
 using CUE4Parse.GameTypes.RocoKingdomWorld.Assets.Objects;
 using CUE4Parse.GameTypes.SMG.UE4.Assets.Exports.Wwise;
@@ -195,6 +196,7 @@ public class CUE4ParseViewModel : ViewModel
                     ], SearchOption.AllDirectories, versionContainer, pathComparer),
                     _ when versionContainer.Game is EGame.GAME_AshEchoes => new AEDefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer),
                     _ when versionContainer.Game is EGame.GAME_BlackStigma => new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, StringComparer.Ordinal),
+                    _ when versionContainer.Game is EGame.GAME_HonorofKingsWorld => new HoKWDefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer),
                     _ => new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer)
                 };
 
@@ -718,7 +720,6 @@ public class CUE4ParseViewModel : ViewModel
             case "verse":
             case "html":
             case "json5":
-            case "json":
             case "uref":
             case "cube":
             case "usda":
@@ -770,6 +771,17 @@ public class CUE4ParseViewModel : ViewModel
                 using var reader = new StreamReader(stream);
 
                 TabControl.SelectedTab.SetDocumentText(reader.ReadToEnd(), saveProperties, updateUi);
+
+                break;
+            }
+            case "json":
+            {
+                var data = Provider.SaveAsset(entry);
+                using var stream = new MemoryStream(data) { Position = 0 };
+                using var reader = new StreamReader(stream);
+
+                var parsedJson = JsonConvert.DeserializeObject(reader.ReadToEnd());
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(parsedJson, Formatting.Indented), saveProperties, updateUi);
 
                 break;
             }
