@@ -726,6 +726,7 @@ public class CUE4ParseViewModel : ViewModel
             case "ocio":
             case "data" when Provider.ProjectName is "OakGame":
             case "scss":
+            case "yaml":
             case "ini":
             case "txt":
             case "log":
@@ -753,6 +754,7 @@ public class CUE4ParseViewModel : ViewModel
             case "yml":
             case "js":
             case "po":
+            case "py":
             case "md":
             case "h":
             case "non" when Provider.Versions.Game is EGame.GAME_RocoKingdomWorld:
