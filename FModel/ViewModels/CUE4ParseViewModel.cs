@@ -400,6 +400,16 @@ public class CUE4ParseViewModel : ViewModel
         });
     }
 
+    private ITypeMappingsProvider SelectMappingsProvider(string path)
+    {
+        if (path.EndsWith(".jmap.gz", StringComparison.OrdinalIgnoreCase) || path.EndsWith(".jmap", StringComparison.OrdinalIgnoreCase))
+        {
+            return new JmapTypeMappingsProvider(path);
+        }
+
+        return new FileUsmapTypeMappingsProvider(path);
+    }
+
     public Task InitMappings(bool force = false)
     {
         if (!UserSettings.IsEndpointValid(EEndpointType.Mapping, out var endpoint))
@@ -413,7 +423,7 @@ public class CUE4ParseViewModel : ViewModel
             var l = ELog.Information;
             if (endpoint.Overwrite && File.Exists(endpoint.FilePath))
             {
-                Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(endpoint.FilePath);
+                Provider.MappingsContainer = SelectMappingsProvider(endpoint.FilePath);
             }
             else if (endpoint.IsValid)
             {
@@ -439,7 +449,7 @@ public class CUE4ParseViewModel : ViewModel
                             _apiEndpointView.DownloadFile(mapping.Url, mappingPath);
                         }
 
-                        Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(mappingPath);
+                        Provider.MappingsContainer = SelectMappingsProvider(mappingPath);
                         break;
                     }
                 }
@@ -1321,8 +1331,8 @@ public class CUE4ParseViewModel : ViewModel
             {
                 var data = squareEnixObject switch
                 {
-                    USQEXSEADSoundBank sqexSoundBank => sqexSoundBank.SQEXSoundBankData?.Data ?? [],
-                    USQEXSEADSound sqexSound => sqexSound.SQEXSoundData?.Data ?? [],
+                    USQEXSEADSoundBank sqexSoundBank => sqexSoundBank.SQEXSoundBankData?.ReadDataOnce() ?? [],
+                    USQEXSEADSound sqexSound => sqexSound.SQEXSoundData?.ReadDataOnce() ?? [],
                     _ => [],
                 };
                 var sabPath = Path.Combine(TabControl.SelectedTab.Entry.PathWithoutExtension.Replace('\\', '/').SubstringBeforeLast('/'), squareEnixObject.Name);
