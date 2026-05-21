@@ -260,7 +260,7 @@ public class CUE4ParseViewModel : ViewModel
                             {
                                 (manifest, _) = manifestInfo.DownloadAndParseAsync(manifestOptions,
                                     cancellationToken: cancellationToken,
-                                    elementManifestPredicate: static x => x.Uri.Host == "download.epicgames.com"
+                                    elementManifestPredicate: static x => x.Uri.Host == "download.epicgames.com" || x.Uri.Host == "epicgames-download1.akamaized.net"
                                 ).GetAwaiter().GetResult();
                             }
                             catch (HttpRequestException ex)
