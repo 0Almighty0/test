@@ -799,6 +799,7 @@ public class CUE4ParseViewModel : ViewModel
 
                 break;
             }
+            case "ebd" when Provider.Versions.Game is EGame.GAME_ArcRaiders:
             case "json":
             {
                 var data = Provider.SaveAsset(entry);
@@ -1028,7 +1029,7 @@ public class CUE4ParseViewModel : ViewModel
             var nonPath = Provider.Files.Keys.FirstOrDefault(k => k.EndsWith(nonFileName, StringComparison.OrdinalIgnoreCase));
 
             // I will only get one localization file because they did not translate any languages, lol
-            var locPathKey = entry.Path.Replace("/BinData/", "/BinLocalize/en_US/").Replace("/BinDataCompressed/", "/BinLocalize/en_US/");
+            var locPathKey = entry.Path.Replace("/BinData/", "/BinLocalize/zh_Hans/").Replace("/BinDataCompressed/", "/BinLocalize/zh_Hans/");
             var locFileFound = Provider.Files.TryGetValue(locPathKey, out var locEntry);
 
             if (!string.IsNullOrEmpty(nonPath) && Provider.Files.TryGetValue(nonPath, out var nonEntry))
