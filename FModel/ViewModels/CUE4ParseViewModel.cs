@@ -26,6 +26,7 @@ using CUE4Parse.GameTypes.Borderlands4.Wwise;
 using CUE4Parse.GameTypes.DFHO.Assets.Objects;
 using CUE4Parse.GameTypes.HonorOfKings.FileProvider;
 using CUE4Parse.GameTypes.KRD.Assets.Exports;
+using CUE4Parse.GameTypes.LegoBatman.Assets;
 using CUE4Parse.GameTypes.RocoKingdomWorld.Assets.Objects;
 using CUE4Parse.GameTypes.SMG.UE4.Assets.Exports.Wwise;
 using CUE4Parse.GameTypes.SquareEnix.UE4.Assets.Exports;
@@ -1436,6 +1437,27 @@ public class CUE4ParseViewModel : ViewModel
                     }
                 }
 
+                return false;
+            }
+            // LEGO® Batman™: Legacy of the Dark Knight
+            case UWubAudioEvent when (isNone || saveAudio) && pointer.Object.Value is UWubAudioEvent wubAudioEvent:
+            {
+                var extractedSounds = WwiseProvider.ExtractWubAudioEventSounds(wubAudioEvent);
+                foreach (var sound in extractedSounds)
+                {
+                    SaveAndPlaySound(cancellationToken, sound.OutputPath, sound.Extension, sound.Data?.GetData() ?? [], saveAudio, updateUi);
+                }
+                return false;
+            }
+            case UWubDialogueEvent when (isNone || saveAudio) && pointer.Object.Value is UWubDialogueEvent wubDialogueEvent:
+            {
+                var files = wubDialogueEvent.Wems
+                    .SelectMany(wem => Provider.Files.Values.Where(file => file.Path.EndsWith(wem.Text + ".wem", StringComparison.OrdinalIgnoreCase)))
+                    .ToList();
+                foreach (var entry in files)
+                {
+                    SaveAndPlaySound(cancellationToken, entry.PathWithoutExtension, entry.Extension, entry.Read(), saveAudio, updateUi);
+                }
                 return false;
             }
             case UWorld when isNone && UserSettings.Default.PreviewWorlds:
