@@ -571,7 +571,7 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
         if (SelectedAudioFile?.Data == null)
             return false;
         if (SelectedAudioFile.Extension == "wav")
-            return false;
+            return true;
 
         if (!TryConvert(SelectedAudioFile.FilePath, SelectedAudioFile.Data, SelectedAudioFile.Extension, out var convertedFilePath, true))
             return false;
