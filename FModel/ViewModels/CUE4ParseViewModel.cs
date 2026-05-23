@@ -733,6 +733,7 @@ public class CUE4ParseViewModel : ViewModel
             case "archive":
             case "dnearchive": // Banishers: Ghosts of New Eden
             case "gitignore":
+            case "gitattributes":
             case "LICENSE":
             case "playstats": // Dispatch
             case "template":
@@ -791,6 +792,8 @@ public class CUE4ParseViewModel : ViewModel
             case "bl":
             case "bm":
             case "br":
+            case "sql":
+            case "cs":
             {
                 var data = Provider.SaveAsset(entry);
                 using var stream = new MemoryStream(data) { Position = 0 };
@@ -1321,8 +1324,7 @@ public class CUE4ParseViewModel : ViewModel
                     _ => []
                 };
 
-                var directory = Path.GetDirectoryName(atomObject.Owner?.Name) ?? "/Criware/";
-                directory = Path.GetDirectoryName(atomObject.Owner.Provider.FixPath(directory));
+                var directory = Path.GetDirectoryName(Provider.FixPath(atomObject.Owner?.Name ?? "/Criware/"));
                 foreach (var sound in extractedSounds)
                 {
                     SaveAndPlaySound(cancellationToken, Path.Combine(directory, sound.Name).Replace("\\", "/"), sound.Extension, sound.Data, saveAudio, updateUi);
@@ -1616,7 +1618,7 @@ public class CUE4ParseViewModel : ViewModel
             bool conversionSuccess = true;
             if (UserSettings.Default.ConvertAudioOnBulkExport && extLower is not "wav")
             {
-                if (AudioPlayerViewModel.TryConvert(savedAudioPath, data, out string wavFilePath))
+                if (AudioPlayerViewModel.TryConvert(savedAudioPath, data, extLower, out string wavFilePath))
                     savedAudioPath = wavFilePath;
                 else
                 {

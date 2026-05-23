@@ -350,11 +350,15 @@ public class GameFileViewModel(GameFile asset) : ViewModel
             case "pem":
             case "xml":
             case "gitignore":
+            case "gitattributes":
             case "html":
             case "css":
             case "js":
             case "data":
             case "csv":
+            case "sql":
+            case "py":
+            case "cs":
                 AssetCategory = EAssetCategory.Data;
                 break;
             case "stinfo":

@@ -80,10 +80,14 @@ public class FileToGeometryConverter : IMultiValueConverter
                 "bin" => ("DataTableIcon", "BinaryBrush"),
                 "xml" => ("XmlIcon", "JsonXmlBrush"),
                 "gitignore" => ("GitIcon", "GitBrush"),
+                "gitattributes" => ("GitIcon", "GitBrush"),
                 "html" => ("HtmlIcon", "HtmlBrush"),
                 "js" => ("JavaScriptIcon", "JavaScriptBrush"),
                 "css" => ("CssIcon", "CssBrush"),
                 "csv" => ("CsvIcon", "CsvBrush"),
+                "sql" => ("SQLIcon", "SQLBrush"),
+                "py" => ("PythonIcon", "PythonBrush"),
+                "cs" => ("CSharpIcon", "CSharpBrush"),
                 _ => ("DataTableIcon", "NeutralBrush")
             },
 
