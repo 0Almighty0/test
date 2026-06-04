@@ -1036,6 +1036,22 @@ public class CUE4ParseViewModel : ViewModel
             var locPathKey = entry.Path.Replace("/BinData/", "/BinLocalize/zh_Hans/").Replace("/BinDataCompressed/", "/BinLocalize/zh_Hans/");
             var locFileFound = Provider.Files.TryGetValue(locPathKey, out var locEntry);
 
+            if (entry.Path is "NRC/Content/ScriptC/Data/Audio/dataconfig_audio.bytes")
+            {
+                var descFound = Provider.Files.TryGetValue("NRC/Content/ScriptC/Data/Audio/dataconfig_audiodesc.bytes", out var descEntry);
+                var typeDescFound = Provider.Files.TryGetValue("NRC/Content/ScriptC/Data/Audio/typeDesc.bytes", out var typeDescEntry);
+
+                if (!descFound || !typeDescFound)
+                {
+                    Log.Warning("Could not find associated dataconfig_audiodesc.bytes or typeDesc.bytes, cannot parse audio config");
+                    return;
+                }
+
+                var data = new FRocoAudioConfig(entry.CreateReader(), descEntry.CreateReader(), typeDescEntry.CreateReader());
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(data, Formatting.Indented), saveProperties, updateUi);
+                return;
+            }
+
             if (!string.IsNullOrEmpty(nonPath) && Provider.Files.TryGetValue(nonPath, out var nonEntry))
             {
                 string json = Encoding.UTF8.GetString(nonEntry.Read());
