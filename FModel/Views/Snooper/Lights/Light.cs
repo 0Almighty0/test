@@ -121,9 +121,9 @@ public abstract class Light : IDisposable
 
     public virtual void ImGuiLight()
     {
-        SnimGui.Layout("Color");ImGui.PushID(1);
+        SnimGui.Layout("颜色");ImGui.PushID(1);
         ImGui.ColorEdit4("", ref Color, ImGuiColorEditFlags.NoAlpha);
-        ImGui.PopID();SnimGui.Layout("Intensity");ImGui.PushID(2);
+        ImGui.PopID();SnimGui.Layout("强度");ImGui.PushID(2);
         ImGui.DragFloat("", ref Intensity, 0.1f);ImGui.PopID();
     }
 

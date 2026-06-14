@@ -67,19 +67,7 @@ public class ImGuiController : IDisposable
             io.NativePtr->IniFilename = (byte*)iniFileNamePtr;
         }
         
-        // If not found, Fallback to default ImGui Font
-        var normalPath   = @"C:\Windows\Fonts\segoeui.ttf";
-        var boldPath     = @"C:\Windows\Fonts\segoeuib.ttf";
-        var semiBoldPath = @"C:\Windows\Fonts\seguisb.ttf";
-
-        if (File.Exists(normalPath))
-            FontNormal = io.Fonts.AddFontFromFileTTF(normalPath, 16 * DpiScale);
-        if (File.Exists(boldPath))
-            FontBold = io.Fonts.AddFontFromFileTTF(boldPath, 16 * DpiScale);
-        if (File.Exists(semiBoldPath))
-            FontSemiBold = io.Fonts.AddFontFromFileTTF(semiBoldPath, 16 * DpiScale);
-
-        io.Fonts.AddFontDefault();
+        LoadUiFonts(io);
         io.Fonts.Build();          // Build font atlas
 
         io.BackendFlags |= ImGuiBackendFlags.RendererHasVtxOffset;
@@ -98,6 +86,56 @@ public class ImGuiController : IDisposable
     public void SemiBold() => PushFont(FontSemiBold);
 
     private void PushFont(ImFontPtr ptr) => ImGui.PushFont(ptr);
+
+    private unsafe void LoadUiFonts(ImGuiIOPtr io)
+    {
+        var ranges = io.Fonts.GetGlyphRangesChineseFull();
+        var size = 16 * DpiScale;
+
+        FontNormal = AddFirstExistingFont(io, size, ranges,
+            @"C:\Windows\Fonts\msyh.ttc",
+            @"C:\Windows\Fonts\Deng.ttf",
+            @"C:\Windows\Fonts\simhei.ttf",
+            @"C:\Windows\Fonts\simsun.ttc",
+            @"C:\Windows\Fonts\segoeui.ttf");
+
+        FontBold = AddFirstExistingFont(io, size, ranges,
+            @"C:\Windows\Fonts\msyhbd.ttc",
+            @"C:\Windows\Fonts\simhei.ttf",
+            @"C:\Windows\Fonts\msyh.ttc",
+            @"C:\Windows\Fonts\segoeuib.ttf");
+
+        FontSemiBold = AddFirstExistingFont(io, size, ranges,
+            @"C:\Windows\Fonts\msyhbd.ttc",
+            @"C:\Windows\Fonts\msyh.ttc",
+            @"C:\Windows\Fonts\seguisb.ttf");
+
+        if (FontNormal.NativePtr == null)
+            FontNormal = io.Fonts.AddFontDefault();
+        if (FontBold.NativePtr == null)
+            FontBold = FontNormal;
+        if (FontSemiBold.NativePtr == null)
+            FontSemiBold = FontBold.NativePtr != null ? FontBold : FontNormal;
+    }
+
+    private static unsafe ImFontPtr AddFirstExistingFont(ImGuiIOPtr io, float size, IntPtr ranges, params string[] paths)
+    {
+        foreach (var path in paths)
+        {
+            if (!File.Exists(path)) continue;
+            try
+            {
+                var font = io.Fonts.AddFontFromFileTTF(path, size, null, ranges);
+                if (font.NativePtr != null) return font;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"ImGui font load failed: {path}: {ex.Message}");
+            }
+        }
+
+        return new ImFontPtr(null);
+    }
 
     public void WindowResized(int width, int height)
     {

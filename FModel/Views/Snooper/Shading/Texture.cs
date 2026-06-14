@@ -235,13 +235,13 @@ public class Texture : IDisposable
         {
             SnimGui.NoFramePaddingOnY(() =>
             {
-                SnimGui.Layout("Type");ImGui.Text($" :  ({Format}) {Name}");
-                SnimGui.TooltipCopy("(?) Click to Copy Path", Path);
+                SnimGui.Layout("类型");ImGui.Text($" :  ({Format}) {Name}");
+                SnimGui.TooltipCopy("(?) 点击复制路径", Path);
                 SnimGui.Layout("Guid");ImGui.Text($" :  {Guid.ToString(EGuidFormats.UniqueObjectGuid)}");
-                SnimGui.Layout("Size");
+                SnimGui.Layout("尺寸");
                 ImGui.Text($" :  {Width}x{Height}");
 
-                SnimGui.Layout("Swizzle");
+                SnimGui.Layout("通道映射");
                 for (int c = 0; c < SwizzleMask.Length; c++)
                 {
                     if (ImGui.Checkbox(_labels[c], ref _values[c]))

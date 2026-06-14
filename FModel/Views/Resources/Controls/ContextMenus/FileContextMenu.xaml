@@ -5,7 +5,7 @@
                     xmlns:converters="clr-namespace:FModel.Views.Resources.Converters">
     <ContextMenu x:Key="FileContextMenu" x:Shared="False"
                  DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}">
-        <MenuItem Header="Extract in New Tab" Command="{Binding RightClickMenuCommand}">
+        <MenuItem Header="在新标签页提取" Command="{Binding RightClickMenuCommand}">
             <MenuItem.CommandParameter>
                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                     <Binding Source="Assets_Extract_New_Tab" />
@@ -20,7 +20,7 @@
                 </Viewbox>
             </MenuItem.Icon>
         </MenuItem>
-        <MenuItem Header="Show Metadata" Command="{Binding RightClickMenuCommand}">
+        <MenuItem Header="显示元数据" Command="{Binding RightClickMenuCommand}">
             <MenuItem.CommandParameter>
                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                     <Binding Source="Assets_Show_Metadata" />
@@ -46,7 +46,7 @@
                 </Viewbox>
             </MenuItem.Icon>
         </MenuItem>
-        <MenuItem Header="Find References" Command="{Binding RightClickMenuCommand}">
+        <MenuItem Header="查找引用" Command="{Binding RightClickMenuCommand}">
             <MenuItem.CommandParameter>
                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                     <Binding Source="Assets_Show_References" />
@@ -73,7 +73,7 @@
                 </Viewbox>
             </MenuItem.Icon>
         </MenuItem>
-        <MenuItem Header="Decompile Blueprint"
+        <MenuItem Header="反编译蓝图"
                   Command="{Binding RightClickMenuCommand}">
             <MenuItem.CommandParameter>
                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
@@ -114,8 +114,8 @@
             <MenuItem.Header>
                 <TextBlock
                     Text="{Binding PlacementTarget.SelectedItem.Asset.Extension,
-                    FallbackValue='Export Raw Data',
-                    StringFormat='Export Raw Data (.{0})',
+                    FallbackValue='导出原始数据',
+                    StringFormat='导出原始数据 (.{0})',
                     RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
             </MenuItem.Header>
             <MenuItem.CommandParameter>
@@ -132,7 +132,7 @@
                 </Viewbox>
             </MenuItem.Icon>
         </MenuItem>
-        <MenuItem Header="Save Properties (.json)" Command="{Binding RightClickMenuCommand}">
+        <MenuItem Header="保存属性 (.json)" Command="{Binding RightClickMenuCommand}">
             <MenuItem.CommandParameter>
                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                     <Binding Source="Save_Properties" />
@@ -147,7 +147,7 @@
                 </Viewbox>
             </MenuItem.Icon>
         </MenuItem>
-        <MenuItem Header="Save Texture" Command="{Binding RightClickMenuCommand}">
+        <MenuItem Header="保存纹理" Command="{Binding RightClickMenuCommand}">
             <MenuItem.CommandParameter>
                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                     <Binding Source="Save_Textures" />
@@ -173,7 +173,7 @@
                 </Viewbox>
             </MenuItem.Icon>
         </MenuItem>
-        <MenuItem Header="Save Model" Command="{Binding RightClickMenuCommand}">
+        <MenuItem Header="保存模型" Command="{Binding RightClickMenuCommand}">
             <MenuItem.CommandParameter>
                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                     <Binding Source="Save_Models" />
@@ -199,7 +199,7 @@
                 </Viewbox>
             </MenuItem.Icon>
         </MenuItem>
-        <MenuItem Header="Save Animation" Command="{Binding RightClickMenuCommand}">
+        <MenuItem Header="保存动画" Command="{Binding RightClickMenuCommand}">
             <MenuItem.CommandParameter>
                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                     <Binding Source="Save_Animations" />
@@ -225,7 +225,7 @@
                 </Viewbox>
             </MenuItem.Icon>
         </MenuItem>
-        <MenuItem Header="Save Audio" Command="{Binding RightClickMenuCommand}">
+        <MenuItem Header="保存音频" Command="{Binding RightClickMenuCommand}">
             <MenuItem.CommandParameter>
                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                     <Binding Source="Save_Audio" />
@@ -252,7 +252,7 @@
             </MenuItem.Icon>
         </MenuItem>
         <Separator />
-        <MenuItem Header="Copy">
+        <MenuItem Header="复制">
             <MenuItem.Icon>
                 <Viewbox Width="16" Height="16">
                     <Canvas Width="24" Height="24">
@@ -260,7 +260,7 @@
                     </Canvas>
                 </Viewbox>
             </MenuItem.Icon>
-            <MenuItem Header="Package Path" Command="{Binding CopyCommand}">
+            <MenuItem Header="资源包路径" Command="{Binding CopyCommand}">
                 <MenuItem.CommandParameter>
                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                         <Binding Source="File_Path" />
@@ -268,7 +268,7 @@
                     </MultiBinding>
                 </MenuItem.CommandParameter>
             </MenuItem>
-            <MenuItem Header="Package Name" Command="{Binding CopyCommand}">
+            <MenuItem Header="资源包名称" Command="{Binding CopyCommand}">
                 <MenuItem.CommandParameter>
                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                         <Binding Source="File_Name" />
@@ -276,7 +276,7 @@
                     </MultiBinding>
                 </MenuItem.CommandParameter>
             </MenuItem>
-            <MenuItem Header="Directory Path" Command="{Binding CopyCommand}">
+            <MenuItem Header="目录路径" Command="{Binding CopyCommand}">
                 <MenuItem.CommandParameter>
                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                         <Binding Source="Directory_Path" />
@@ -284,7 +284,7 @@
                     </MultiBinding>
                 </MenuItem.CommandParameter>
             </MenuItem>
-            <MenuItem Header="Package Path w/o Extension" Command="{Binding CopyCommand}">
+            <MenuItem Header="不含扩展名的资源包路径" Command="{Binding CopyCommand}">
                 <MenuItem.CommandParameter>
                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                         <Binding Source="File_Path_No_Extension" />
@@ -292,7 +292,7 @@
                     </MultiBinding>
                 </MenuItem.CommandParameter>
             </MenuItem>
-            <MenuItem Header="Package Name w/o Extension" Command="{Binding CopyCommand}">
+            <MenuItem Header="不含扩展名的资源包名称" Command="{Binding CopyCommand}">
                 <MenuItem.CommandParameter>
                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                         <Binding Source="File_Name_No_Extension" />

@@ -8,35 +8,35 @@
                              Loaded="OnLoaded">
     <adonisControls:AdonisWindow.Style>
         <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}" >
-            <Setter Property="Title" Value="About" />
+            <Setter Property="Title" Value="关于" />
         </Style>
     </adonisControls:AdonisWindow.Style>
     <StackPanel Margin="30 10">
         <StackPanel HorizontalAlignment="Center" Margin="0 0 0 30">
             <TextBlock Text="{Binding Source={x:Static local:Constants.APP_VERSION}, StringFormat={}FModel {0}}" FontSize="15" FontWeight="500" Foreground="#9DA3DD" FontStretch="Expanded" />
-            <TextBlock Text="Made with &#x2665; by Asval" FontSize="30" FontWeight="700" Foreground="#DAE5F2" HorizontalAlignment="Center" />
+            <TextBlock Text="由 Asval 用心打造" FontSize="30" FontWeight="700" Foreground="#DAE5F2" HorizontalAlignment="Center" />
         </StackPanel>
 
         <StackPanel HorizontalAlignment="Center">
-            <TextBlock Text="Description" FontSize="15" FontWeight="700" Foreground="#9DA3DD" FontStretch="Expanded" />
+            <TextBlock Text="简介" FontSize="15" FontWeight="700" Foreground="#9DA3DD" FontStretch="Expanded" />
             <TextBlock Text="&#09;&#09;&#09;&#09;" FontSize="25" FontWeight="700" Height="2" Foreground="Transparent" HorizontalAlignment="Center" />
         </StackPanel>
         <TextBlock FontSize="12" Foreground="#727272" TextWrapping="Wrap" Margin="0 0 0 30" Text="{Binding DescriptionLabel}" />
 
         <StackPanel HorizontalAlignment="Center">
-            <TextBlock Text="Contributors" FontSize="15" FontWeight="700" Foreground="#9DA3DD" FontStretch="Expanded" />
+            <TextBlock Text="贡献者" FontSize="15" FontWeight="700" Foreground="#9DA3DD" FontStretch="Expanded" />
             <TextBlock Text="&#09;&#09;&#09;&#09;" FontSize="25" FontWeight="700" Height="2" Foreground="Transparent" HorizontalAlignment="Center" />
         </StackPanel>
         <TextBlock FontSize="12" Foreground="#727272" TextWrapping="Wrap" Margin="0 0 0 30" Text="{Binding ContributorsLabel}" />
 
         <StackPanel HorizontalAlignment="Center">
-            <TextBlock Text="Donators" FontSize="15" FontWeight="700" Foreground="#9DA3DD" FontStretch="Expanded" />
+            <TextBlock Text="捐赠者" FontSize="15" FontWeight="700" Foreground="#9DA3DD" FontStretch="Expanded" />
             <TextBlock Text="&#09;&#09;&#09;&#09;" FontSize="25" FontWeight="700" Height="2" Foreground="Transparent" HorizontalAlignment="Center" />
         </StackPanel>
         <TextBlock FontSize="12" Foreground="#727272" TextWrapping="Wrap" Margin="0 0 0 30" Text="{Binding DonatorsLabel}" />
 
         <StackPanel HorizontalAlignment="Center">
-            <TextBlock Text="Powered by" FontSize="15" FontWeight="700" Foreground="#9DA3DD" FontStretch="Expanded" />
+            <TextBlock Text="支持组件" FontSize="15" FontWeight="700" Foreground="#9DA3DD" FontStretch="Expanded" />
             <TextBlock Text="&#09;&#09;&#09;&#09;" FontSize="25" FontWeight="700" Height="2" Foreground="Transparent" HorizontalAlignment="Center" />
         </StackPanel>
         <TextBlock FontSize="12" Foreground="#727272" TextWrapping="Wrap" Margin="0 0 0 30" Text="{Binding ReferencesLabel}" />

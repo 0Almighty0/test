@@ -9,7 +9,7 @@
          Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.225'}">
     <adonisControls:AdonisWindow.Style>
         <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}" >
-            <Setter Property="Title" Value="Backup Manager" />
+            <Setter Property="Title" Value="备份管理器" />
         </Style>
     </adonisControls:AdonisWindow.Style>
     <Grid Column="2" adonisExtensions:LayerExtension.Layer="2" Margin="10" Background="Transparent">
@@ -29,15 +29,15 @@
         </Grid.ColumnDefinitions>
 
         <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" TextAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center"
-                   Text="You can only use backup files when loading new &amp; modified archives. FModel will compare your local archives with the backup file you selected to filter packages and only show what you asked. We provide pre-created backups for some popular games but you can still create your own that will store information about all the game's packages at time T, for later use." />
+                   Text="只有在加载新增或修改过的资源档案时，才能使用备份文件。FModel 会将本地资源档案与所选备份文件进行比较，以过滤资源包并只显示你需要的内容。我们为一些热门游戏提供了预制备份，但你也可以自己创建，用来保存某个时间点全部资源包的信息，供以后使用。" />
 
-        <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Click="OnCreateBackupClick"
-                Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" Content="Create" />
+                <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Click="OnCreateBackupClick"
+                Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" Content="创建" />
 
-        <Separator Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Style="{StaticResource CustomSeparator}" Tag="PRE-CREATED BACKUP FILES" />
+        <Separator Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Style="{StaticResource CustomSeparator}" Tag="预制备份文件" />
 
         <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Center"
-                   Text="{Binding SelectedBackup.FileSize, Converter={x:Static converters:SizeToStringConverter.Instance}, FallbackValue='Backup', StringFormat={}Backup ({0})}" />
+                   Text="{Binding SelectedBackup.FileSize, Converter={x:Static converters:SizeToStringConverter.Instance}, FallbackValue='Backup', StringFormat={}备份 ({0})}" />
         <ComboBox Grid.Row="4" Grid.Column="2" ItemsSource="{Binding BackupsView}" SelectedItem="{Binding SelectedBackup, Mode=TwoWay}">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
@@ -55,7 +55,7 @@
                 </Style>
             </ComboBox.Style>
         </ComboBox>
-        <Button Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" Content="Download" Click="OnDownloadClick">
+        <Button Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" Content="下载" Click="OnDownloadClick">
             <Button.Style>
                 <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
                     <Setter Property="IsEnabled" Value="True" />

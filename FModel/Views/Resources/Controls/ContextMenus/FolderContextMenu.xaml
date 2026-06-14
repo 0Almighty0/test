@@ -5,7 +5,7 @@
                     x:Class="FModel.Views.Resources.Controls.ContextMenus.FolderContextMenuDictionary">
     <ContextMenu x:Key="FolderContextMenu" x:Shared="False"
                  Opened="FolderContextMenu_OnOpened">
-        <MenuItem Header="Export Folder's Packages Raw Data (.uasset)"
+        <MenuItem Header="导出文件夹内资源包原始数据 (.uasset)"
                   Command="{Binding RightClickMenuCommand}">
             <MenuItem.CommandParameter>
                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
@@ -25,7 +25,7 @@
                 </Viewbox>
             </MenuItem.Icon>
         </MenuItem>
-        <MenuItem Header="Save Folder's Packages Properties (.json)"
+        <MenuItem Header="保存文件夹内资源包属性 (.json)"
                   Command="{Binding RightClickMenuCommand}">
             <MenuItem.CommandParameter>
                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
@@ -45,7 +45,7 @@
                 </Viewbox>
             </MenuItem.Icon>
         </MenuItem>
-        <MenuItem Header="Save Folder's Packages Textures"
+        <MenuItem Header="保存文件夹内资源包纹理"
                   Command="{Binding RightClickMenuCommand}">
             <MenuItem.CommandParameter>
                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
@@ -65,7 +65,7 @@
                 </Viewbox>
             </MenuItem.Icon>
         </MenuItem>
-        <MenuItem Header="Save Folder's Decompiled Blueprints"
+        <MenuItem Header="保存文件夹内反编译蓝图"
                   Command="{Binding RightClickMenuCommand}">
             <MenuItem.CommandParameter>
                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
@@ -85,7 +85,7 @@
                 </Viewbox>
             </MenuItem.Icon>
         </MenuItem>
-        <MenuItem Header="Save Folder's Packages Models"
+        <MenuItem Header="保存文件夹内资源包模型"
                   Command="{Binding RightClickMenuCommand}">
             <MenuItem.CommandParameter>
                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
@@ -105,7 +105,7 @@
                 </Viewbox>
             </MenuItem.Icon>
         </MenuItem>
-        <MenuItem Header="Save Folder's Packages Animations"
+        <MenuItem Header="保存文件夹内资源包动画"
                   Command="{Binding RightClickMenuCommand}">
             <MenuItem.CommandParameter>
                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
@@ -125,7 +125,7 @@
                 </Viewbox>
             </MenuItem.Icon>
         </MenuItem>
-        <MenuItem Header="Save Folder's Packages Audio"
+        <MenuItem Header="保存文件夹内资源包音频"
                   Command="{Binding RightClickMenuCommand}">
             <MenuItem.CommandParameter>
                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
@@ -146,7 +146,7 @@
             </MenuItem.Icon>
         </MenuItem>
         <Separator />
-        <MenuItem Header="Favorite Directory" Click="OnFavoriteDirectoryClick"
+        <MenuItem Header="收藏目录" Click="OnFavoriteDirectoryClick"
                   CommandParameter="{Binding Tag, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
             <MenuItem.Icon>
                 <Viewbox Width="16" Height="16">
@@ -156,7 +156,7 @@
                 </Viewbox>
             </MenuItem.Icon>
         </MenuItem>
-        <MenuItem Header="Copy Directory Path" Click="OnCopyDirectoryPathClick"
+        <MenuItem Header="复制目录路径" Click="OnCopyDirectoryPathClick"
                   CommandParameter="{Binding Tag, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
             <MenuItem.Icon>
                 <Viewbox Width="16" Height="16">

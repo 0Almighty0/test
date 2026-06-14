@@ -97,7 +97,7 @@
                     <Setter.Value>
                         <ControlTemplate>
                             <Grid>
-                                <TextBlock Text="No folders or packages found" FontWeight="SemiBold" TextAlignment="Center"
+                                <TextBlock Text="未找到文件夹或资源包" FontWeight="SemiBold" TextAlignment="Center"
                                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                             </Grid>
                         </ControlTemplate>
@@ -198,7 +198,7 @@
                     <Setter.Value>
                         <ControlTemplate>
                             <Grid>
-                                <TextBlock Text="No packages found in folder" FontWeight="SemiBold" TextAlignment="Center"
+                                <TextBlock Text="文件夹中未找到资源包" FontWeight="SemiBold" TextAlignment="Center"
                                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                             </Grid>
                         </ControlTemplate>

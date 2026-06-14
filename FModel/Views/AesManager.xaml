@@ -11,7 +11,7 @@
          Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.30'}">
     <adonisControls:AdonisWindow.Style>
         <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}" >
-            <Setter Property="Title" Value="AES Manager" />
+            <Setter Property="Title" Value="AES 管理器" />
         </Style>
     </adonisControls:AdonisWindow.Style>
     <Grid>
@@ -22,9 +22,9 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Orientation="Vertical" Margin="10 5 10 10">
-            <TextBlock Text="Instruction" HorizontalAlignment="Center" FontSize="20" FontWeight="SemiBold" />
+            <TextBlock Text="说明" HorizontalAlignment="Center" FontSize="20" FontWeight="SemiBold" />
             <TextBlock TextAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Center" MaxWidth="576"
-                       Text="In order to decipher archives' information, an AES key, in most cases, is needed. Here you can set the key for your static and dynamic archives. If you don't know what key to use for your set game, simply Google it. Keys must start with &quot;0x&quot; and contains 64 more characters." />
+                       Text="要解密资源档案信息，通常需要 AES 密钥。你可以在这里为静态和动态资源档案设置密钥。如果不知道要用哪个密钥，就去查对应游戏的资料。密钥必须以 &quot;0x&quot; 开头，并且后面还有 64 个字符。" />
         </StackPanel>
 
         <GroupBox Grid.Row="1" adonisExtensions:LayerExtension.Layer="2" Margin="10 10 10 18"
@@ -71,9 +71,9 @@
                 </Grid.ColumnDefinitions>
 
                 <Button Grid.Column="1" MinWidth="78" Margin="0 0 12 0" IsDefault="True" IsCancel="False"
-                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="OK" Click="OnClick" />
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="确定" Click="OnClick" />
                 <Button Grid.Column="2" MinWidth="78" Margin="0 0 12 0" IsDefault="False"  IsCancel="False"
-                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="Refresh" Click="OnRefreshAes"
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="刷新" Click="OnRefreshAes"
                         Visibility="{Binding Converter={x:Static converters:EndpointToTypeConverter.Instance}, ConverterParameter={x:Static local:EEndpointType.Aes}}">
                 </Button>
             </Grid>

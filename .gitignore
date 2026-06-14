@@ -31,6 +31,22 @@ bld/
 [Ll]og/
 [Ll]ogs/
 
+# FModel local runtime/output data
+Output/
+**/Output/
+Exports/
+**/Exports/
+Backups/
+**/Backups/
+Mappings/
+**/Mappings/
+*.usmap
+imgui.ini
+FModel.exe
+FModel.pdb
+publish/
+**/publish/
+
 # Visual Studio 2015/2017 cache/options directory
 .vs/
 .idea/
